@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "vtex.styleguide": "9.x",
-    "vtex.css-handles": "0.x"
+    "vtex.css-handles": "0.x",
+    "vtex.sellers-graphql": "2.x",
+    "vtex.catalog-graphql": "1.x"
   },
   "registries": [
     "smartcheckout"
