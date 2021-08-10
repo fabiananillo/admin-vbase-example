@@ -1,7 +1,52 @@
 type Query {
   token: String
+  configuration: [Configuration]
+  configurationByCategory(id: ID!): [Configuration]
 }
 
 type Mutation {
+  "Crea una nueva configuracion"
+  newConfiguration(configuration: ConfigurationInput!): Configuration!
+  "Actualiza configuracion"
+  updateConfiguration(configuration: ConfigurationInput!): Configuration!
+  # enableConfiguration(id: ID!): Configuration!
+  # disableConfiguration(id: ID!): Configuration!
+  "Crea nuevo token"
   saveToken(token: String): String
+}
+
+input ConfigurationInput {
+  id: ID
+  name: String!
+  status: Boolean!
+  type: String!
+  value: String!
+  created_at: String
+  updated_at: String
+  sellers: [String]
+  ean: Int!
+  productName: Int!
+  skuName: Int!
+  brand: Int!
+  category: Int!
+  skuRef: Int!
+  productRef: Int!
+}
+
+type Configuration {
+  id: ID
+  name: String!
+  status: Boolean!
+  type: String!
+  value: String!
+  created_at: String
+  updated_at: String
+  sellers: [String]
+  ean: Int!
+  productName: Int!
+  skuName: Int!
+  brand: Int!
+  category: Int!
+  skuRef: Int!
+  productRef: Int!
 }
