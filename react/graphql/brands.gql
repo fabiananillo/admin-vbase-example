@@ -1,0 +1,8 @@
+query brands{
+  brands(pageSize:200, page:1, term:"") @context(provider: "vtex.catalog-graphql"){
+    items{
+      name
+      id
+    }
+  }
+}
