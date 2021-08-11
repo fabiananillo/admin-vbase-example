@@ -1,10 +1,18 @@
 import React, { FC, useState, useEffect, useRef } from 'react'
-import { Layout, PageBlock, Button, Input, RadioGroup } from 'vtex.styleguide'
-import { useCssHandles } from 'vtex.css-handles'
-import './DottedBox.css';
-import './node_modules/react-dual-listbox/lib/react-dual-listbox.css'
-const CSS_HANDLES = ['exampleContainer', 'exampleText'];
-const DualListBox = require('react-dual-listbox');
+import {
+  Layout,
+  PageBlock,
+  Button,
+  Input,
+  RadioGroup,
+  Alert,
+} from 'vtex.styleguide'
+import { AddSeller } from './components/AddSeller'
+import { AddCategory } from './components/AddCategory'
+import { AddBrand } from './components/AddBrand'
+import { useMutation, useQuery } from 'react-apollo'
+import newConfigurationGQL from './graphql/newConfiguration.gql'
+import sellersQuery from './graphql/sellers.gql'
 
 interface DisableTrack {
   ean: string
@@ -16,7 +24,14 @@ interface DisableTrack {
   productRef: string
 }
 
-type DisableTrackEnum = 'ean' | 'productName' | 'skuName' | 'brand' | 'category' | 'skuRef' | 'productRef';
+type DisableTrackEnum =
+  | 'ean'
+  | 'productName'
+  | 'skuName'
+  | 'brand'
+  | 'category'
+  | 'skuRef'
+  | 'productRef'
 
 interface DataInterface {
   target: {
@@ -25,78 +40,84 @@ interface DataInterface {
   }
 }
 
-
-const TARGET_POINTS = 100;
+const TARGET_POINTS = 100
 const INITIAL_FORM_VALUES = {
-  ean: "0",
-  productName: "0",
-  skuName: "0",
-  brand: "0",
-  category: "0",
-  skuRef: "0",
-  productRef: "0"
-};
-
-
+  ean: '0',
+  productName: '0',
+  skuName: '0',
+  brand: '0',
+  category: '0',
+  skuRef: '0',
+  productRef: '0',
+}
 
 const AdminExample: FC = () => {
-  const handles = useCssHandles(CSS_HANDLES);
-  const initialState = {
-    default: 'n/a',
-    value: '',
-    error: true,
-    errorMessage: 'This field is mandatory',
-    selected: ['one'],
+  const initialScoreOptions = {
+    value: 'seller',
   }
-  const options = [
-    { value: 'n/a', label: 'Ninguno' },
-    { value: 'vtexlatam', label: 'Vtex Latam' },
-    { value: '1', label: '1' }, ,
-  ]
 
-  const [formValues, setFormValues] = useState(INITIAL_FORM_VALUES);
-  const [disableTrack, setDisableTrack] = useState<any>({});
-  const [enableButton, setEnableButton] = useState<boolean>(true);
+  const [formValues, setFormValues] = useState(INITIAL_FORM_VALUES)
+  const [scoreOptions, setScoreOptions] = useState<any>(initialScoreOptions)
+  const [disableTrack, setDisableTrack] = useState<any>({})
+  const [enableButton, setEnableButton] = useState<boolean>(true)
+  const [showAlert, setShowAlert] = useState<boolean>(false)
+  const [alertType, setAlertType] = useState<string>('')
+  const [alertMessage, setAlertMessage] = useState<string>('')
+  const [sellers, setSeller] = useState<any>([])
+  const [nameConfig, setNameConfig] = useState<string>('')
+  const [saveNewConfiguration] = useMutation(newConfigurationGQL)
+  const eanRef = useRef<HTMLInputElement>()
+  const nameRef = useRef<HTMLInputElement>()
+  const [sellerList, setSellerList] = useState<any>([])
+
+  //getSeller list
+  useQuery(sellersQuery, {
+    onCompleted: ({ sellers }: any) => {
+      setSellerList(sellers.items)
+    },
+  })
 
   const clearDataEvent = () => {
-
-    setFormValues(INITIAL_FORM_VALUES);
-
+    setFormValues(INITIAL_FORM_VALUES)
+    setNameConfig('')
+    setSeller([])
   }
-/**
- * POWER BY CFICA
- */
+
   useEffect(() => {
-    const totalPoints = calculateTotalPoints(formValues);
-    console.log(totalPoints);
+    const totalPoints = calculateTotalPoints(formValues)
+    //console.log(totalPoints);
     if (totalPoints === TARGET_POINTS) {
-      disableInputs(formValues);
-      setEnableButton(false);
+      disableInputs(formValues)
+      setEnableButton(false)
     } else {
-      setDisableTrack({
-        "ean": false,
-        "productName": false,
-        "skuName": false,
-        "brand": false,
-        "category": false,
-        "skuRef": false,
-        "productRef": false
-      });
-      setEnableButton(true);
-      console.log(formValues);
+      enableInputs()
+      setEnableButton(true)
+      //console.log(formValues);
     }
-  }, [formValues]);
+
+    if (totalPoints > TARGET_POINTS) {
+      setAlertType('error')
+      setAlertMessage('El valor total de puntos no puede ser mayor de 100')
+      handleAlert(true)
+      disableInputs(formValues)
+    } else {
+      handleAlert(false)
+      enableInputs()
+    }
+  }, [formValues])
 
   const calculateTotalPoints = (formValues: DisableTrack) => {
-    const values = Object?.values(formValues);
-    const filteredValues = values?.filter((value) => typeof value === "number");
-    const totalPoints = filteredValues?.reduce((a, b) => a + b, 0);
-    return Number(totalPoints);
-  };
+    const values = Object?.values(formValues)
+    const filteredValues = values?.filter((value) => typeof value === 'number')
+    const totalPoints = filteredValues?.reduce((a, b) => a + b, 0)
+    return Number(totalPoints)
+  }
 
   const disableInputs = (formValues: DisableTrack) => {
     let track = {}
-    const keys: DisableTrackEnum[] = Object?.keys(formValues) as DisableTrackEnum[]
+    const keys: DisableTrackEnum[] = Object?.keys(
+      formValues
+    ) as DisableTrackEnum[]
     keys.map((key: DisableTrackEnum) => {
       const value = formValues[key]
       track = { ...track, [key]: typeof value === 'string' }
@@ -105,29 +126,111 @@ const AdminExample: FC = () => {
     setDisableTrack(track)
   }
 
-  const handleInputValue = ({ target: { id, value } }: DataInterface) => {
-
-    console.log('value', value);
-    //console.log('totalpoints', totalPoints);
-    setFormValues({
-      ...formValues,
-      [id]: Number(value)
-    });
-
-  };
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-
-    // if (totalPoints < 100) {
-    //   //Mostrar alerta 
-
-    // }
-
+  const enableInputs = () => {
+    setDisableTrack({
+      ean: false,
+      productName: false,
+      skuName: false,
+      brand: false,
+      category: false,
+      skuRef: false,
+      productRef: false,
+    })
   }
 
-  const eanRef = useRef(null);
+  const handleInputValue = ({ target: { id, value } }: DataInterface) => {
+    setFormValues({
+      ...formValues,
+      [id]: Number(value),
+    })
+  }
 
+  const handleInputName = ({ target: { value } }: DataInterface) => {
+    setNameConfig(value)
+  }
+
+  const handleAlert = (status: any) => {
+    setShowAlert(status)
+  }
+
+  const handleOnlyNumbers = (event: any) => {
+    const keyCode = event.keyCode || event.which
+    const keyValue = String.fromCharCode(keyCode)
+    console.log('keyValue', keyValue)
+    if (!/[0-9]/.test(event.key)) {
+      event.preventDefault()
+    }
+  }
+
+  const handleScoreOptions = (e: any) => {
+    setFormValues(INITIAL_FORM_VALUES)
+    setNameConfig('')
+    setSeller([])
+    setScoreOptions({ value: e.currentTarget.value })
+  }
+
+  const handleSubmit = async (e: any) => {
+    setEnableButton(true)
+
+    e.preventDefault()
+    console.log('selected option', e.target[6])
+
+    //console.log('e', e.target)
+
+    let valueOption = 'N/A'
+    if (scoreOptions.value == 'categoria' || scoreOptions.value == 'marca') {
+      valueOption = e.target[6]
+    }
+
+    let configurationVariables: any = {
+      name: nameConfig,
+      status: true,
+      type: scoreOptions.value,
+      value: valueOption,
+      sellers: sellers,
+      ean: parseInt(formValues['ean']),
+      productRef: parseInt(formValues['productRef']),
+      productName: parseInt(formValues['productName']),
+      skuName: parseInt(formValues['skuName']),
+      brand: parseInt(formValues['brand']),
+      category: parseInt(formValues['category']),
+      skuRef: parseInt(formValues['skuRef']),
+    }
+
+    saveNewConfiguration({
+      variables: {
+        configuration: configurationVariables,
+      },
+    })
+      .then((resp: any) => {
+        setFormValues(INITIAL_FORM_VALUES)
+        setNameConfig('')
+        setSeller([])
+        console.log('se ha guardado', resp)
+        setAlertType('success')
+        setAlertMessage('Se ha guardado la configuración con éxito.')
+        setShowAlert(true)
+      })
+      .catch((err: any) => {
+        console.log('error', err)
+        setAlertType('error')
+        setAlertMessage('Ha ocurrido un error, intente nuevamente.')
+        setShowAlert(true)
+        setFormValues(INITIAL_FORM_VALUES)
+        setNameConfig('')
+        setSeller([])
+      })
+  }
+
+  const handleRemove = (id: any) => {
+    console.log('id to remove', id)
+    console.log('the sellers list', sellers)
+    let newList = sellers.filter((seller: any) => seller !== id)
+
+    setSeller(newList)
+    console.log('newList', newList)
+    //setSeller(newList)
+  }
 
   return (
     <Layout>
@@ -137,128 +240,236 @@ const AdminExample: FC = () => {
         variation="full"
       >
         <form onSubmit={handleSubmit}>
-          <div >I can use the DOM with react ref</div>
           <div>
-            <RadioGroup
-              error={initialState.error}
-              errorMessage={initialState.error && initialState.errorMessage}
-              name="radioGroupExample4"
-              options={[
-                { value: 'value1', label: 'Seller' },
-                { value: 'value2', label: 'Categoria' },
-                { value: 'value3', label: 'Marca' },
-              ]}
-              value={initialState.value}
-            //           onChange={({ target: { value } }) =>
-            //   setState({ value, error: false, errorMessage: '' })
-            // }
-            />
-
-            <div className={`${handles.exampleContainer}`}>
-              <DualListBox
-                options={options}
-                selected={initialState.selected}
-              //   onChange={(selected:any) => {
-              //     this.setState({ selected });
-              // }}
+            <div className="mb5">
+              <RadioGroup
+                name="scoreOptions"
+                options={[
+                  { value: 'seller', label: 'Seller' },
+                  { value: 'categoria', label: 'Categoria' },
+                  { value: 'marca', label: 'Marca' },
+                ]}
+                value={scoreOptions.value}
+                onChange={handleScoreOptions}
               />
             </div>
 
+            {scoreOptions.value == 'seller' ? (
+              <div className="mb5">
+                <AddSeller setSeller={setSeller} sellers={sellers} />
+
+                <ol>
+                  {sellers.map((seller: any) => {
+                    let sellerName = sellerList.find(
+                      (sellerFind: any) => sellerFind.id === seller
+                    )
+                    return (
+                      <li key={seller}>
+                        {' '}
+                        {sellerName.name}{' '}
+                        <button
+                          type="button"
+                          onClick={() => handleRemove(seller)}
+                        >
+                          Remover
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ol>
+              </div>
+            ) : null}
+
+            {scoreOptions.value == 'categoria' ? (
+              <div className="mb5">
+                <AddSeller setSeller={setSeller} sellers={sellers} />
+
+                <ol>
+                  {sellers.map((seller: any) => {
+                    let sellerName = sellerList.find(
+                      (sellerFind: any) => sellerFind.id === seller
+                    )
+                    return (
+                      <li key={seller}>
+                        {' '}
+                        {sellerName.name}{' '}
+                        <button
+                          type="button"
+                          onClick={() => handleRemove(seller)}
+                        >
+                          Remover
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ol>
+
+                <AddCategory />
+              </div>
+            ) : null}
+
+            {scoreOptions.value == 'marca' ? (
+              <div className="mb5">
+                <AddSeller setSeller={setSeller} sellers={sellers} />
+
+                <ol>
+                  {sellers.map((seller: any) => {
+                    let sellerName = sellerList.find(
+                      (sellerFind: any) => sellerFind.id === seller
+                    )
+                    return (
+                      <li key={seller}>
+                        {' '}
+                        {sellerName.name}{' '}
+                        <button
+                          type="button"
+                          onClick={() => handleRemove(seller)}
+                        >
+                          Remover
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ol>
+
+                <AddBrand />
+              </div>
+            ) : null}
+
+            <div className="mb5">
+              <Input
+                id="name"
+                ref={nameRef}
+                value={nameConfig}
+                placeholder="Type name config"
+                dataAttributes={{ 'hj-white-list': true, test: 'string' }}
+                label="NAME"
+                onChange={handleInputName}
+              />
+            </div>
 
             <div className="mb5">
               <Input
                 id="ean"
-                maxLength="3"
+                value={formValues['ean']}
                 ref={eanRef}
+                maxLength="3"
+                pattern="^-?[0-9]\d*\.?\d*$"
                 placeholder="Type ean value"
                 dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label="EAN"
+                onKeyPress={handleOnlyNumbers}
                 onChange={handleInputValue}
-                disabled={!!disableTrack["ean"]}
+                disabled={!!disableTrack['ean']}
               />
             </div>
 
             <div className="mb5">
               <Input
                 id="productName"
+                value={formValues['productName']}
                 maxLength="3"
                 placeholder="Type product name value"
                 dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label="Product Name"
+                onKeyPress={handleOnlyNumbers}
                 onChange={handleInputValue}
-                disabled={!!disableTrack["productName"]}
+                disabled={!!disableTrack['productName']}
               />
             </div>
 
             <div className="mb5">
               <Input
                 id="skuName"
+                value={formValues['skuName']}
                 maxLength="3"
                 placeholder="Type sku name value"
                 dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label="Sku Name"
+                onKeyPress={handleOnlyNumbers}
                 onChange={handleInputValue}
-                disabled={!!disableTrack["skuName"]}
+                disabled={!!disableTrack['skuName']}
               />
             </div>
 
             <div className="mb5">
               <Input
                 id="brand"
+                value={formValues['brand']}
                 maxLength="3"
                 placeholder="Type brand value"
                 dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label="Brand"
+                onKeyPress={handleOnlyNumbers}
                 onChange={handleInputValue}
-                disabled={!!disableTrack["brand"]}
+                disabled={!!disableTrack['brand']}
               />
             </div>
 
             <div className="mb5">
               <Input
                 id="category"
+                value={formValues['category']}
                 maxLength="3"
                 placeholder="Type category value"
                 dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label="Category"
+                onKeyPress={handleOnlyNumbers}
                 onChange={handleInputValue}
-                disabled={!!disableTrack["category"]}
+                disabled={!!disableTrack['category']}
               />
             </div>
 
             <div className="mb5">
               <Input
                 id="skuRef"
+                value={formValues['skuRef']}
                 maxLength="3"
                 placeholder="Type sku ref value"
                 dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label="Sku Ref"
+                onKeyPress={handleOnlyNumbers}
                 onChange={handleInputValue}
-                disabled={!!disableTrack["skuRef"]}
+                disabled={!!disableTrack['skuRef']}
               />
             </div>
 
             <div className="mb5">
               <Input
                 id="productRef"
+                value={formValues['productRef']}
                 maxLength="3"
                 placeholder="Type product ref value"
                 dataAttributes={{ 'hj-white-list': true, test: 'string' }}
                 label="Product Ref"
+                onKeyPress={handleOnlyNumbers}
                 onChange={handleInputValue}
-                disabled={!!disableTrack["productRef"]}
+                disabled={!!disableTrack['productRef']}
               />
             </div>
 
+            <div className="mb5">
+              {showAlert ? (
+                <Alert type={`${alertType}`}>{alertMessage}</Alert>
+              ) : null}
+            </div>
           </div>
 
           <div className="flex justify-center">
             <div className="flex flex-column items-center w-100">
               <span className="mb4">
-                <Button type="submit" variation="primary" disabled={enableButton}>Guardar</Button>
+                <Button
+                  type="submit"
+                  variation="primary"
+                  disabled={enableButton}
+                >
+                  Guardar
+                </Button>
               </span>
               <span className="mb4">
-                <Button variation="secondary" onClick={clearDataEvent}>Limpiar</Button>
+                <Button variation="secondary" onClick={clearDataEvent}>
+                  Limpiar
+                </Button>
               </span>
             </div>
           </div>

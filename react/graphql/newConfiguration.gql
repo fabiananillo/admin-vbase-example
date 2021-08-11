@@ -1,0 +1,19 @@
+mutation newConf($configuration: ConfigurationInput!){
+  newConfiguration(configuration: $configuration){
+    id,
+    name,
+    status,
+    type,
+    value,
+    created_at,
+    updated_at,
+    sellers,
+    ean,
+    productRef,
+    productName,
+    skuRef,
+    skuName,
+    brand,
+    category
+  }
+}

@@ -1,0 +1,19 @@
+query configuration {
+  configuration @context(provider: "vtex.admin-vbase-example") {
+    id
+    name
+    status
+    type
+    value
+    sellers
+    ean
+    productName
+    productRef
+    skuName
+    skuRef
+    brand
+    category
+    created_at
+    updated_at
+  }
+}
