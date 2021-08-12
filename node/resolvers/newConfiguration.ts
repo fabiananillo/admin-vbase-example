@@ -13,7 +13,7 @@ export default async function newConfiguration(
   let generateId = 1;
   if (listId) {
     generateId = listId.generateId + 1;
-    //generateId = 1;
+    //generateId = 'test';
   }
 
   console.log(listId);

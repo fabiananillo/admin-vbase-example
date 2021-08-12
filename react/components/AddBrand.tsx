@@ -1,27 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Dropdown } from 'vtex.styleguide'
-import { useQuery } from 'react-apollo'
-import brandsQuery from '../graphql/brands.gql'
 
-export const AddBrand = ({ defaultBrand = '' }: any) => {
-  const [selected, setSelected] = useState<string>(
-    defaultBrand !== '' ? defaultBrand : ''
-  )
-  const { data } = useQuery(brandsQuery)
-  let brandList: any[] = []
+export const AddBrand = ({
+  defaultBrand = '',
+  setSelectedBrand,
+  selectedBrand,
+  brandList }: any) => {
 
-  if (data) {
-    let items = data.brands.items
-    items.map((value: any) => {
-      brandList = [...brandList, { value: value.id, label: value.name }]
-    })
-    brandList.sort(
-      (a, b) => (a.label.toLowerCase() > b.label.toLowerCase() && 1) || -1
-    )
+  if (defaultBrand) {
+    setSelectedBrand(defaultBrand)
   }
 
+  //console.log('brandList component', brandList)
+
   const handleSelectBrand = (_: any, value: any) => {
-    setSelected(value)
+    setSelectedBrand(value)
   }
 
   return (
@@ -29,7 +22,7 @@ export const AddBrand = ({ defaultBrand = '' }: any) => {
       <h2>Seleccione Marca</h2>
       <Dropdown
         options={brandList}
-        value={selected}
+        value={selectedBrand}
         onChange={handleSelectBrand}
       />
     </div>

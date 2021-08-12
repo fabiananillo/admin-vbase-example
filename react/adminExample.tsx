@@ -13,6 +13,7 @@ import { AddBrand } from './components/AddBrand'
 import { useMutation, useQuery } from 'react-apollo'
 import newConfigurationGQL from './graphql/newConfiguration.gql'
 import sellersQuery from './graphql/sellers.gql'
+import brandsQuery from './graphql/brands.gql'
 
 interface DisableTrack {
   ean: string
@@ -64,11 +65,13 @@ const AdminExample: FC = () => {
   const [alertType, setAlertType] = useState<string>('')
   const [alertMessage, setAlertMessage] = useState<string>('')
   const [sellers, setSeller] = useState<any>([])
+  const [selectedBrand, setSelectedBrand] = useState<string>('')
   const [nameConfig, setNameConfig] = useState<string>('')
   const [saveNewConfiguration] = useMutation(newConfigurationGQL)
   const eanRef = useRef<HTMLInputElement>()
   const nameRef = useRef<HTMLInputElement>()
   const [sellerList, setSellerList] = useState<any>([])
+  const [brandList, setBrandList] = useState<any>([])
 
   //getSeller list
   useQuery(sellersQuery, {
@@ -76,6 +79,17 @@ const AdminExample: FC = () => {
       setSellerList(sellers.items)
     },
   })
+
+  //get brand list
+  useQuery(brandsQuery, {
+    onCompleted: ({ brands }: any) => {
+      brands.items.sort(
+        (a: any, b: any) => (a.label.toLowerCase() > b.label.toLowerCase() && 1) || -1
+      )
+      setBrandList(brands.items)
+    },
+  })
+  //console.log('brands', brandList);
 
   const clearDataEvent = () => {
     setFormValues(INITIAL_FORM_VALUES)
@@ -254,85 +268,43 @@ const AdminExample: FC = () => {
               />
             </div>
 
-            {scoreOptions.value == 'seller' ? (
-              <div className="mb5">
-                <AddSeller setSeller={setSeller} sellers={sellers} />
+            <div className="mb5">
+              <AddSeller setSeller={setSeller} sellers={sellers} />
 
-                <ol>
-                  {sellers.map((seller: any) => {
-                    let sellerName = sellerList.find(
-                      (sellerFind: any) => sellerFind.id === seller
-                    )
-                    return (
-                      <li key={seller}>
-                        {' '}
-                        {sellerName.name}{' '}
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(seller)}
-                        >
-                          Remover
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ol>
-              </div>
-            ) : null}
+              <ol>
+                {sellers.map((seller: any) => {
+                  let sellerName = sellerList.find(
+                    (sellerFind: any) => sellerFind.id === seller
+                  )
+                  return (
+                    <li key={seller}>
+                      {' '}
+                      {sellerName.name}{' '}
+                      <button
+                        type="button"
+                        onClick={() => handleRemove(seller)}
+                      >
+                        Remover
+                      </button>
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
 
             {scoreOptions.value == 'categoria' ? (
               <div className="mb5">
-                <AddSeller setSeller={setSeller} sellers={sellers} />
-
-                <ol>
-                  {sellers.map((seller: any) => {
-                    let sellerName = sellerList.find(
-                      (sellerFind: any) => sellerFind.id === seller
-                    )
-                    return (
-                      <li key={seller}>
-                        {' '}
-                        {sellerName.name}{' '}
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(seller)}
-                        >
-                          Remover
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ol>
-
                 <AddCategory />
               </div>
             ) : null}
 
             {scoreOptions.value == 'marca' ? (
               <div className="mb5">
-                <AddSeller setSeller={setSeller} sellers={sellers} />
-
-                <ol>
-                  {sellers.map((seller: any) => {
-                    let sellerName = sellerList.find(
-                      (sellerFind: any) => sellerFind.id === seller
-                    )
-                    return (
-                      <li key={seller}>
-                        {' '}
-                        {sellerName.name}{' '}
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(seller)}
-                        >
-                          Remover
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ol>
-
-                <AddBrand />
+                <AddBrand
+                  setSelectedBrand={setSelectedBrand}
+                  selectedBrand={selectedBrand}
+                  brandList={brandList}
+                />
               </div>
             ) : null}
 
