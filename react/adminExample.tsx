@@ -14,6 +14,7 @@ import { useMutation, useQuery } from 'react-apollo'
 import newConfigurationGQL from './graphql/newConfiguration.gql'
 import sellersQuery from './graphql/sellers.gql'
 import brandsQuery from './graphql/brands.gql'
+import categoriesQuery from './graphql/categories.gql'
 
 interface DisableTrack {
   ean: string
@@ -66,12 +67,14 @@ const AdminExample: FC = () => {
   const [alertMessage, setAlertMessage] = useState<string>('')
   const [sellers, setSeller] = useState<any>([])
   const [selectedBrand, setSelectedBrand] = useState<string>('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [nameConfig, setNameConfig] = useState<string>('')
   const [saveNewConfiguration] = useMutation(newConfigurationGQL)
   const eanRef = useRef<HTMLInputElement>()
   const nameRef = useRef<HTMLInputElement>()
   const [sellerList, setSellerList] = useState<any>([])
   const [brandList, setBrandList] = useState<any>([])
+  const [categoryList, setCategoryList] = useState<any>([])
 
   //getSeller list
   useQuery(sellersQuery, {
@@ -87,6 +90,17 @@ const AdminExample: FC = () => {
         (a: any, b: any) => (a.label.toLowerCase() > b.label.toLowerCase() && 1) || -1
       )
       setBrandList(brands.items)
+    },
+  })
+  //console.log('brands', brandList);
+
+  //get category list
+  useQuery(categoriesQuery, {
+    onCompleted: ({ categories }: any) => {
+      categories.items.sort(
+        (a: any, b: any) => (a.label.toLowerCase() > b.label.toLowerCase() && 1) || -1
+      )
+      setCategoryList(categories.items)
     },
   })
   //console.log('brands', brandList);
@@ -187,13 +201,15 @@ const AdminExample: FC = () => {
     setEnableButton(true)
 
     e.preventDefault()
-    console.log('selected option', e.target[6])
 
     //console.log('e', e.target)
 
     let valueOption = 'N/A'
-    if (scoreOptions.value == 'categoria' || scoreOptions.value == 'marca') {
-      valueOption = e.target[6]
+    if (scoreOptions.value == 'categoria') {
+      valueOption = selectedCategory
+    }
+    if (scoreOptions.value == 'marca') {
+      valueOption = selectedBrand
     }
 
     let configurationVariables: any = {
@@ -294,7 +310,11 @@ const AdminExample: FC = () => {
 
             {scoreOptions.value == 'categoria' ? (
               <div className="mb5">
-                <AddCategory />
+                <AddCategory
+                  setSelectedCategory={setSelectedCategory}
+                  selectedCategory={selectedCategory}
+                  categoryList={categoryList}
+                />
               </div>
             ) : null}
 
