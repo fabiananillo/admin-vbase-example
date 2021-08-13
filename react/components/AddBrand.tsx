@@ -2,14 +2,9 @@ import React from 'react'
 import { Dropdown } from 'vtex.styleguide'
 
 export const AddBrand = ({
-  defaultBrand = '',
   setSelectedBrand,
   selectedBrand,
   brandList }: any) => {
-
-  if (defaultBrand) {
-    setSelectedBrand(defaultBrand)
-  }
 
   //console.log('brandList component', brandList)
 

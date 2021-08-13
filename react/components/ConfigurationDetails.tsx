@@ -40,7 +40,12 @@ interface DataInterface {
   }
 }
 
-export const ConfigurationDetails = ({ configuration }: any) => {
+export const ConfigurationDetails = (
+  {
+    configuration,
+    brandList,
+    categoryList
+  }: any) => {
   //console.log('configuration is: ', configuration)
   const TARGET_POINTS = 100
   const INITIAL_FORM_VALUES = {
@@ -65,10 +70,13 @@ export const ConfigurationDetails = ({ configuration }: any) => {
   const [alertType, setAlertType] = useState<string>('')
   const [alertMessage, setAlertMessage] = useState<string>('')
   const [sellers, setSeller] = useState<any>([])
-  const [sellerList, setSellerList] = useState<any>([])
   const [nameConfig, setNameConfig] = useState<string>(configuration.name)
   const [saveNewConfiguration] = useMutation(updateConfigurationGQL)
   const nameRef = useRef<HTMLInputElement>()
+  const [selectedCategory, setSelectedCategory] = useState<any>(configuration.type === 'categoria' ? configuration.value : null)
+  const [selectedBrand, setSelectedBrand] = useState<any>(configuration.type === 'marca' ? configuration.value : null)
+  const [sellerList, setSellerList] = useState<any>([])
+
   //console.log('initialFormValuas', formValues)
 
   //getSeller list
@@ -78,16 +86,13 @@ export const ConfigurationDetails = ({ configuration }: any) => {
     },
   })
 
-  //let defaultSellers: any[] = []
-  let defaultCategory: any = ''
-  let defaultBrand: any = ''
 
-  if (configuration.type === 'categoria') {
-    defaultCategory = configuration.value
-  }
-  if (configuration.type === 'marca') {
-    defaultBrand = configuration.value
-  }
+  // if (configuration.type === 'categoria') {
+  //   setSelectedCategory(configuration.value)
+  // }
+  // if (configuration.type === 'marca') {
+  //   setSelectedBrand(configuration.value)
+  // }
 
   const clearDataEvent = () => {
     setFormValues(INITIAL_FORM_VALUES)
@@ -271,97 +276,48 @@ export const ConfigurationDetails = ({ configuration }: any) => {
               />
             </div>
 
-            {scoreOptions.value == 'seller' ? (
-              <div className="mb5">
-                <AddSeller
-                  setSeller={setSeller}
-                  configuration={configuration}
-                  sellers={sellers}
-                />
+            <div className="mb5">
+              <AddSeller setSeller={setSeller} sellers={sellers} />
 
-                <ol>
-                  {sellers.map((seller: any) => {
-                    let sellerName = sellerList.find(
-                      (sellerFind: any) => sellerFind?.id === seller
-                    )
-                    return (
-                      <li key={seller}>
-                        {' '}
-                        {sellerName?.name}{' '}
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(seller)}
-                        >
-                          Remover
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ol>
-              </div>
-            ) : null}
+              <ol>
+                {sellers.map((seller: any) => {
+                  let sellerName = sellerList.find(
+                    (sellerFind: any) => sellerFind.id === seller
+                  )
+                  return (
+                    <li key={seller}>
+                      {' '}
+                      {sellerName.name}{' '}
+                      <button
+                        type="button"
+                        onClick={() => handleRemove(seller)}
+                      >
+                        Remover
+                      </button>
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
 
             {scoreOptions.value == 'categoria' ? (
               <div className="mb5">
-                <AddSeller
-                  setSeller={setSeller}
-                  configuration={configuration}
-                  sellers={sellers}
+                <AddCategory
+                  setSelectedCategory={setSelectedCategory}
+                  selectedCategory={selectedCategory}
+                  categoryList={categoryList}
+
                 />
-
-                <ol>
-                  {sellers.map((seller: any) => {
-                    let sellerName = sellerList.find(
-                      (sellerFind: any) => sellerFind?.id === seller
-                    )
-                    return (
-                      <li key={seller}>
-                        {' '}
-                        {sellerName?.name}{' '}
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(seller)}
-                        >
-                          Remover
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ol>
-
-                <AddCategory defaultCategory={defaultCategory} />
               </div>
             ) : null}
 
             {scoreOptions.value == 'marca' ? (
               <div className="mb5">
-                <AddSeller
-                  setSeller={setSeller}
-                  configuration={configuration}
-                  sellers={sellers}
+                <AddBrand
+                  setSelectedBrand={setSelectedBrand}
+                  selectedBrand={selectedBrand}
+                  brandList={brandList}
                 />
-
-                <ol>
-                  {sellers.map((seller: any) => {
-                    let sellerName = sellerList.find(
-                      (sellerFind: any) => sellerFind?.id === seller
-                    )
-                    return (
-                      <li key={seller}>
-                        {' '}
-                        {sellerName?.name}{' '}
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(seller)}
-                        >
-                          Remover
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ol>
-
-                <AddBrand defaultBrand={defaultBrand} />
               </div>
             ) : null}
 

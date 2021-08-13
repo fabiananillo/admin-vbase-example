@@ -47,7 +47,7 @@ const AdminOtherExample: FC = () => {
     },
   })
 
-  console.log('category list', categoryList)
+  //console.log('category list', categoryList)
 
   const defaultSchema = {
     properties: {
@@ -70,7 +70,7 @@ const AdminOtherExample: FC = () => {
         title: 'Valor',
         cellRenderer: ({ rowData }: any) => {
           if (rowData.type == 'categoria') {
-            console.log('rowData', rowData)
+            //console.log('rowData', rowData)
             let value = categoryList.find(
               (cat: any) => cat.value === rowData.value
             )
@@ -197,7 +197,11 @@ const AdminOtherExample: FC = () => {
             aria-describedby="modal-description"
           >
             <div className="dark-gray" id="modal-description">
-              <ConfigurationDetails configuration={configuration} />
+              <ConfigurationDetails
+                configuration={configuration}
+                brandList={brandList}
+                categoryList={categoryList}
+              />
             </div>
           </Modal>
         </div>
