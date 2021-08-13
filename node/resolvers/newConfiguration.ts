@@ -12,8 +12,8 @@ export default async function newConfiguration(
   let listId = await <any>ctx.clients.vbase.getJSON<any>('vtexcol.myvtex', 'configurationId', true);
   let generateId = 1;
   if (listId) {
-    //generateId = listId.generateId + 1;
-    generateId = 1;
+    generateId = listId.generateId + 1;
+    //generateId = 1;
   }
 
   console.log(listId);

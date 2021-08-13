@@ -4236,6 +4236,11 @@ react-test-renderer@^16.13.1:
     react-is "^16.8.6"
     scheduler "^0.19.1"
 
+react-use-disclosure@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-use-disclosure/-/react-use-disclosure-3.2.0.tgz#966369a2d371139c77ba0ae5dff53fe730e0636b"
+  integrity sha512-4Q4KTX30Eowrvp165v8r6kJufX2ZS/1+keBPJjNkDVfBpXB1bRMZpH3sMeIvwIvCqvNWzdQnhWTLD6Xam7FXMg==
+
 react@^16.12.0, react@^16.9.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
