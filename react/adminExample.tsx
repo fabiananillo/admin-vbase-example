@@ -65,7 +65,7 @@ const AdminExample: FC = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [alertType, setAlertType] = useState<string>('')
   const [alertMessage, setAlertMessage] = useState<string>('')
-  const [sellers, setSeller] = useState<any>([])
+  const [selectedSeller, setSelectedSeller] = useState<any>([])
   const [selectedBrand, setSelectedBrand] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [nameConfig, setNameConfig] = useState<string>('')
@@ -82,6 +82,8 @@ const AdminExample: FC = () => {
       setSellerList(sellers.items)
     },
   })
+
+  //console.log('sellerList', sellerList)
 
   //get brand list
   useQuery(brandsQuery, {
@@ -108,7 +110,7 @@ const AdminExample: FC = () => {
   const clearDataEvent = () => {
     setFormValues(INITIAL_FORM_VALUES)
     setNameConfig('')
-    setSeller([])
+    setSelectedSeller([])
   }
 
   useEffect(() => {
@@ -193,7 +195,7 @@ const AdminExample: FC = () => {
   const handleScoreOptions = (e: any) => {
     setFormValues(INITIAL_FORM_VALUES)
     setNameConfig('')
-    setSeller([])
+    setSelectedSeller([])
     setScoreOptions({ value: e.currentTarget.value })
   }
 
@@ -217,7 +219,7 @@ const AdminExample: FC = () => {
       status: true,
       type: scoreOptions.value,
       value: valueOption,
-      sellers: sellers,
+      sellers: selectedSeller,
       ean: parseInt(formValues['ean']),
       productRef: parseInt(formValues['productRef']),
       productName: parseInt(formValues['productName']),
@@ -235,7 +237,7 @@ const AdminExample: FC = () => {
       .then((resp: any) => {
         setFormValues(INITIAL_FORM_VALUES)
         setNameConfig('')
-        setSeller([])
+        setSelectedSeller([])
         console.log('se ha guardado', resp)
         setAlertType('success')
         setAlertMessage('Se ha guardado la configuración con éxito.')
@@ -248,16 +250,16 @@ const AdminExample: FC = () => {
         setShowAlert(true)
         setFormValues(INITIAL_FORM_VALUES)
         setNameConfig('')
-        setSeller([])
+        setSelectedSeller([])
       })
   }
 
   const handleRemove = (id: any) => {
     console.log('id to remove', id)
-    console.log('the sellers list', sellers)
-    let newList = sellers.filter((seller: any) => seller !== id)
+    console.log('the sellers list', selectedSeller)
+    let newList = selectedSeller.filter((seller: any) => seller !== id)
 
-    setSeller(newList)
+    setSelectedSeller(newList)
     console.log('newList', newList)
     //setSeller(newList)
   }
@@ -285,17 +287,21 @@ const AdminExample: FC = () => {
             </div>
 
             <div className="mb5">
-              <AddSeller setSeller={setSeller} sellers={sellers} />
+              <AddSeller
+                setSelectedSeller={setSelectedSeller}
+                selectedSeller={selectedSeller}
+                sellerList={sellerList}
+              />
 
               <ol>
-                {sellers.map((seller: any) => {
+                {selectedSeller.map((seller: any) => {
                   let sellerName = sellerList.find(
-                    (sellerFind: any) => sellerFind.id === seller
+                    (sellerFind: any) => sellerFind.value === seller
                   )
                   return (
                     <li key={seller}>
                       {' '}
-                      {sellerName.name}{' '}
+                      {sellerName.label}{' '}
                       <button
                         type="button"
                         onClick={() => handleRemove(seller)}

@@ -8,7 +8,7 @@ type Mutation {
   "Crea una nueva configuracion"
   newConfiguration(configuration: ConfigurationInput!): Configuration!
   "Actualiza configuracion"
-  updateConfiguration(configuration: ConfigurationInput!): Configuration!
+  updateConfiguration(configuration: ConfigurationInput!): [Configuration]!
   # enableConfiguration(id: ID!): Configuration!
   # disableConfiguration(id: ID!): Configuration!
   "Crea nuevo token"

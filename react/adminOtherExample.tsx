@@ -3,11 +3,15 @@ import { Layout, PageBlock, Table, Modal } from 'vtex.styleguide'
 import { useQuery } from 'react-apollo'
 import { useDisclosure } from 'react-use-disclosure'
 import { ConfigurationDetails } from './components/ConfigurationDetails'
+import { useMutation } from 'react-apollo'
+import updateConfigurationGQL from './graphql/updateConfiguration.gql'
 import configurationGQL from './graphql/configuration.gql'
 import categoriesQuery from './graphql/categories.gql'
 import brandsQuery from './graphql/brands.gql'
+import sellersQuery from './graphql/sellers.gql'
 
 const AdminOtherExample: FC = () => {
+  const [updateConfiguration] = useMutation(updateConfigurationGQL)
   const [configuration, setConfiguration] = useState<any>({})
   const [configurationList, setConfigurationList] = useState<any>({})
   const [initialConfigurationList, setInitialConfigurationList] = useState<any>(
@@ -15,12 +19,22 @@ const AdminOtherExample: FC = () => {
   )
   const [categoryList, setCategoryList] = useState<any>({})
   const [brandList, setBrandList] = useState<any>({})
+  const [sellerList, setSellerList] = useState<any>([])
   const [searchValue, setSearchValue] = useState<any>('')
   const {
     isOpen: isModalOpen,
     open: openModal,
     close: closeModal,
   } = useDisclosure()
+
+  //getSeller list
+  useQuery(sellersQuery, {
+    onCompleted: ({ sellers }: any) => {
+      setSellerList(sellers.items)
+    },
+  })
+
+  //console.log('seller List', sellerList)
 
   //get configuration list
   useQuery(configurationGQL, {
@@ -137,12 +151,91 @@ const AdminOtherExample: FC = () => {
     },
     {
       label: (_: any) => 'Activar',
-      onClick: ({ rowData }: any) => console.log('click', rowData),
+      onClick: ({ rowData }: any) => {
+        let configurationVariables: any = {
+          id: rowData.id,
+          name: rowData.name,
+          status: true,
+          type: rowData.type,
+          value: rowData.value,
+          sellers: rowData.sellers,
+          ean: rowData.ean,
+          productRef: rowData.productRef,
+          productName: rowData.productName,
+          skuName: rowData.skuName,
+          brand: rowData.brand,
+          category: rowData.category,
+          skuRef: rowData.skuRef,
+          created_at: rowData.created_at,
+          updated_at: rowData.updated_at,
+        }
+
+        //console.log('config var', configurationVariables)
+
+        updateConfiguration({
+          variables: {
+            configuration: configurationVariables,
+          },
+        })
+          .then(({ data }: any) => {
+            //getSeller list
+            let configurationList = data.updateConfiguration.sort((a: any, b: any) => (a.id < b.id && 1) || -1)
+
+            setConfigurationList(configurationList)
+            setInitialConfigurationList(configurationList)
+
+            //console.log('se ha guardado', configurationList)
+
+          })
+          .catch((err: any) => {
+            console.log('error', err)
+          })
+        console.log('click', rowData)
+      },
     },
     {
       label: (_: any) => 'Desactivar',
       isDangerous: true,
-      onClick: ({ rowData }: any) => console.log('click', rowData),
+      onClick: ({ rowData }: any) => {
+        let configurationVariables: any = {
+          id: rowData.id,
+          name: rowData.name,
+          status: false,
+          type: rowData.type,
+          value: rowData.value,
+          sellers: rowData.sellers,
+          ean: rowData.ean,
+          productRef: rowData.productRef,
+          productName: rowData.productName,
+          skuName: rowData.skuName,
+          brand: rowData.brand,
+          category: rowData.category,
+          skuRef: rowData.skuRef,
+          created_at: rowData.created_at,
+          updated_at: rowData.updated_at,
+        }
+
+
+        updateConfiguration({
+          variables: {
+            configuration: configurationVariables,
+          },
+        })
+          .then(({ data }: any) => {
+
+            let configurationList = data.updateConfiguration.sort((a: any, b: any) => (a.id < b.id && 1) || -1)
+
+            setConfigurationList(configurationList)
+            setInitialConfigurationList(configurationList)
+
+            //console.log('se ha guardado', configurationList)
+
+          })
+          .catch((err: any) => {
+            console.log('error', err)
+          })
+        console.log('click', rowData)
+      },
     },
   ]
 
@@ -161,8 +254,6 @@ const AdminOtherExample: FC = () => {
       }
     })
     setConfigurationList(result)
-
-
   }
 
   return (
@@ -201,6 +292,9 @@ const AdminOtherExample: FC = () => {
                 configuration={configuration}
                 brandList={brandList}
                 categoryList={categoryList}
+                sellerList={sellerList}
+                setConfigurationList={setConfigurationList}
+                setInitialConfigurationList={setInitialConfigurationList}
               />
             </div>
           </Modal>

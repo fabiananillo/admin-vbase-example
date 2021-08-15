@@ -10,9 +10,8 @@ import {
 import { AddSeller } from './AddSeller'
 import { AddCategory } from './AddCategory'
 import { AddBrand } from './AddBrand'
-import { useQuery, useMutation } from 'react-apollo'
+import { useMutation } from 'react-apollo'
 import updateConfigurationGQL from '../graphql/updateConfiguration.gql'
-import sellersQuery from '../graphql/sellers.gql'
 
 interface DisableTrack {
   ean: string
@@ -44,7 +43,10 @@ export const ConfigurationDetails = (
   {
     configuration,
     brandList,
-    categoryList
+    categoryList,
+    sellerList,
+    setConfigurationList,
+    setInitialConfigurationList
   }: any) => {
   //console.log('configuration is: ', configuration)
   const TARGET_POINTS = 100
@@ -69,22 +71,17 @@ export const ConfigurationDetails = (
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [alertType, setAlertType] = useState<string>('')
   const [alertMessage, setAlertMessage] = useState<string>('')
-  const [sellers, setSeller] = useState<any>([])
+  const [selectedSeller, setSelectedSeller] = useState<any>(configuration.sellers)
   const [nameConfig, setNameConfig] = useState<string>(configuration.name)
   const [saveNewConfiguration] = useMutation(updateConfigurationGQL)
   const nameRef = useRef<HTMLInputElement>()
   const [selectedCategory, setSelectedCategory] = useState<any>(configuration.type === 'categoria' ? configuration.value : null)
   const [selectedBrand, setSelectedBrand] = useState<any>(configuration.type === 'marca' ? configuration.value : null)
-  const [sellerList, setSellerList] = useState<any>([])
 
-  //console.log('initialFormValuas', formValues)
 
-  //getSeller list
-  useQuery(sellersQuery, {
-    onCompleted: ({ sellers }: any) => {
-      setSellerList(sellers.items)
-    },
-  })
+  //console.log('selectedSeller', selectedSeller)
+
+  //console.log('sellerList', sellerList)
 
 
   // if (configuration.type === 'categoria') {
@@ -97,7 +94,7 @@ export const ConfigurationDetails = (
   const clearDataEvent = () => {
     setFormValues(INITIAL_FORM_VALUES)
     setNameConfig(configuration.name)
-    setSeller([])
+    setSelectedSeller([])
   }
 
   useEffect(() => {
@@ -184,7 +181,7 @@ export const ConfigurationDetails = (
   const handleScoreOptions = (e: any) => {
     setFormValues(INITIAL_FORM_VALUES)
     setNameConfig('')
-    setSeller([])
+    setSelectedSeller([])
     setScoreOptions({ value: e.currentTarget.value })
   }
 
@@ -207,7 +204,7 @@ export const ConfigurationDetails = (
       status: true,
       type: scoreOptions.value,
       value: valueOption,
-      sellers: sellers,
+      sellers: selectedSeller,
       ean: parseInt(formValues['ean']),
       productRef: parseInt(formValues['productRef']),
       productName: parseInt(formValues['productName']),
@@ -224,11 +221,16 @@ export const ConfigurationDetails = (
         configuration: configurationVariables,
       },
     })
-      .then((resp: any) => {
+      .then(({ data }: any) => {
         // setFormValues(INITIAL_FORM_VALUES)
         // setNameConfig('')
         // setSeller([])
-        console.log('se ha guardado', resp)
+        //sort by last id
+
+        let configurationList = data.updateConfiguration.sort((a: any, b: any) => (a.id < b.id && 1) || -1)
+        setConfigurationList(configurationList)
+        setInitialConfigurationList(configurationList)
+
         setAlertType('success')
         setAlertMessage('Se ha guardado la configuración con éxito.')
         setShowAlert(true)
@@ -240,16 +242,16 @@ export const ConfigurationDetails = (
         setShowAlert(true)
         setFormValues(INITIAL_FORM_VALUES)
         setNameConfig('')
-        setSeller([])
+        setSelectedSeller([])
       })
   }
 
   const handleRemove = (id: any) => {
     console.log('id to remove', id)
-    console.log('the sellers list', sellers)
-    let newList = sellers.filter((seller: any) => seller !== id)
+    console.log('the sellers list', selectedSeller)
+    let newList = selectedSeller.filter((seller: any) => seller !== id)
 
-    //setSeller(newList)
+    setSelectedSeller(newList)
     console.log('newList es', newList)
     //setSeller(newList)
   }
@@ -277,17 +279,22 @@ export const ConfigurationDetails = (
             </div>
 
             <div className="mb5">
-              <AddSeller setSeller={setSeller} sellers={sellers} />
+              <AddSeller
+                setSelectedSeller={setSelectedSeller}
+                selectedSeller={selectedSeller}
+                sellerList={sellerList}
+              />
 
               <ol>
-                {sellers.map((seller: any) => {
+                {selectedSeller.map((seller: any) => {
                   let sellerName = sellerList.find(
-                    (sellerFind: any) => sellerFind.id === seller
+                    (sellerFind: any) => sellerFind.value === seller
                   )
+                  console.log('sellerName', sellerName);
                   return (
                     <li key={seller}>
                       {' '}
-                      {sellerName.name}{' '}
+                      {sellerName.label}{' '}
                       <button
                         type="button"
                         onClick={() => handleRemove(seller)}
@@ -306,7 +313,6 @@ export const ConfigurationDetails = (
                   setSelectedCategory={setSelectedCategory}
                   selectedCategory={selectedCategory}
                   categoryList={categoryList}
-
                 />
               </div>
             ) : null}
