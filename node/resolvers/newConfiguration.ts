@@ -1,40 +1,38 @@
-
 export default async function newConfiguration(
   _: any,
   { configuration }: { configuration: any },
   ctx: Context
 ) {
 
-  console.log(configuration);
+  console.log('configuration is', configuration);
 
-  //Saves new configuration with a new id
-  console.log(ctx)
-  let listId = await <any>ctx.clients.vbase.getJSON<any>('vtexcol.myvtex', 'configurationId', true);
-  let generateId = 1;
-  if (listId) {
-    generateId = listId.generateId + 1;
-    //generateId = 1;
-  }
+  let configurationMatcher = await <any>ctx.clients.vbase.getJSON<any>('vtexcol.myvtex', 'configurationMatcher', true);
+  //console.log('currentConfigurationMatcher', configurationMatcher);
 
-  console.log(listId);
-  console.log(configuration);
-  console.log('generateId', generateId)
-  configuration.id = generateId;
   configuration.created_at = Date.now();
   configuration.updated_at = Date.now();
-  const saveId = await ctx.clients.vbase.saveJSON('vtexcol.myvtex', 'configurationId', { generateId });
-  console.log('save id', saveId);
 
-  const saveConfiguration = await <any>ctx.clients.vbase
-    .saveJSON('vtexcol.myvtex', `${generateId}`, { configuration });
-  console.log('saveConfig', saveConfiguration);
-
-  if (saveConfiguration) {
-    const saved = await <any>ctx.clients.vbase.getJSON<{ configuration: any }>('vtexcol.myvtex', `${generateId}`, true);
-    console.log('saved', saved.configuration);
-    return saved.configuration;
-
+  if (configurationMatcher) {
+    configuration.id = configurationMatcher.length + 1;
+    let configurationToSave = [...configurationMatcher, configuration];
+    console.log('configurationToSave', configurationToSave)
+    const saveConfiguration = await <any>ctx.clients.vbase
+      .saveJSON('vtexcol.myvtex', 'configurationMatcher', configurationToSave);
+    if (saveConfiguration) {
+      console.log('saved new config')
+      return [configuration];
+    }
+  } else {
+    configuration.id = 1;
+    const saveConfiguration = await <any>ctx.clients.vbase
+      .saveJSON('vtexcol.myvtex', 'configurationMatcher', [configuration]);
+    if (saveConfiguration) {
+      console.log('saved new config')
+      return [configuration];
+    }
   }
 
-  return false;
+  return [];
+
+
 }

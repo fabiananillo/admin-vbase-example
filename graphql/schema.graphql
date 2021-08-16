@@ -6,7 +6,7 @@ type Query {
 
 type Mutation {
   "Crea una nueva configuracion"
-  newConfiguration(configuration: ConfigurationInput!): Configuration!
+  newConfiguration(configuration: ConfigurationInput!): [Configuration]!
   "Actualiza configuracion"
   updateConfiguration(configuration: ConfigurationInput!): [Configuration]!
   # enableConfiguration(id: ID!): Configuration!

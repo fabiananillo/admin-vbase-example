@@ -227,7 +227,7 @@ const AdminExample: FC = () => {
       brand: parseInt(formValues['brand']),
       category: parseInt(formValues['category']),
       skuRef: parseInt(formValues['skuRef']),
-    }
+    };
 
     saveNewConfiguration({
       variables: {

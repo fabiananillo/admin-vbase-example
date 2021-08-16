@@ -4,42 +4,26 @@ export default async function updateConfiguration(
     ctx: Context
 ) {
 
-    console.log(configuration);
+    console.log('configurationInput', configuration);
 
     //Updates configuration through id
     if (configuration.id) {
-        let configurationId = configuration.id;
+        let configurationMatcher = await <any>ctx.clients.vbase.getJSON<any>('vtexcol.myvtex', 'configurationMatcher', true);
+        console.log('list', configurationMatcher)
+        //Find index of specific object using findIndex method.    
+        let objIndex = configurationMatcher.findIndex(((obj: any) => obj.id == configuration.id));
+        configuration.id = parseInt(configuration.id);
         configuration.updated_at = Date.now();
+        configurationMatcher[objIndex] = configuration;
+        console.log('set update', configurationMatcher)
         const saveConfiguration = await <any>ctx.clients.vbase
-            .saveJSON('vtexcol.myvtex', `${configurationId}`, { configuration });
-        console.log('saveConfig', saveConfiguration);
+            .saveJSON('vtexcol.myvtex', 'configurationMatcher', configurationMatcher);
         if (saveConfiguration) {
-            const saved = await <any>ctx.clients.vbase.getJSON<{ configuration: any }>('vtexcol.myvtex', `${configurationId}`, true);
-            console.log('saved', saved.configuration);
-
-            let listId = await <any>ctx.clients.vbase.getJSON<any>('vtexcol.myvtex', 'configurationId');
-            console.log('listId', listId);
-            // let deleteFile = await <any>ctx.clients.vbase.deleteFile('vtexcol.myvtex', '4');
-            // console.log('deleteFile', deleteFile);
-
-            let configurationList: any[] = [];
-            for (let i = 1; i <= listId.generateId; i++) {
-
-                let configuration = await <any>ctx.clients.vbase.getJSON<{ configuration: any }>('vtexcol.myvtex', `${i}`, true);
-
-                if (configuration) {
-                    let configurationItem = configuration.configuration;
-                    configurationList.push(configurationItem);
-                }
-
-            }
-
-            console.log('configurationList asdasd', configurationList);
-
-            return configurationList;
-
+            console.log('updated')
+            let configurationMatcher = await <any>ctx.clients.vbase.getJSON<any>('vtexcol.myvtex', 'configurationMatcher', true);
+            return configurationMatcher;
         }
     }
 
-    return false;
+    return [];
 }
