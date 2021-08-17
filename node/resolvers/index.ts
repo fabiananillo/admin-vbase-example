@@ -4,6 +4,8 @@ import newConfiguration from './newConfiguration';
 import updateConfiguration from './updateConfiguration';
 import configuration from './configuration';
 import configurationByCategory from './configurationByCategory';
+import configurationByBrand from './configurationByBrand';
+import configurationBySeller from './configurationBySeller';
 
 export const mutations = {
   saveToken,
@@ -14,5 +16,7 @@ export const mutations = {
 export const queries = {
   token,
   configuration,
-  configurationByCategory
+  configurationByCategory,
+  configurationByBrand,
+  configurationBySeller
 }
