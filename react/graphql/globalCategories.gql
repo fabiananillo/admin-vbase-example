@@ -1,0 +1,12 @@
+query globalCategories {
+    globalCategories {
+    value:id
+    title
+    label:name
+    hasChildren
+    children {
+      name
+      id
+    }
+  }
+}

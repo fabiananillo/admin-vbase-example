@@ -1,0 +1,6 @@
+query generalRestriction{
+    generalRestriction{
+        status,
+        list
+    }
+}

@@ -6,5 +6,9 @@
   "admin.app.otherexample": {
     "component": "adminOtherExample",
     "path": "/admin/app/adminOtherExample"
+  },
+  "admin.app.restrictionmatcher": {
+    "component": "restrictionMatcher",
+    "path": "/admin/app/restrictionMatcher"
   }
 }

@@ -1,0 +1,6 @@
+mutation newGeneralRestriction($generalRestriction: GeneralRestrictionInput!) {
+  newGeneralRestriction(generalRestriction: $generalRestriction) {
+    status
+    list
+  }
+}

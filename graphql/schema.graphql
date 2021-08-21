@@ -4,6 +4,7 @@ type Query {
   configurationByCategory(id: ID!): [Configuration]
   configurationByBrand(id: ID!): [Configuration]
   configurationBySeller(id: ID!): [Configuration]
+  generalRestriction: GeneralRestriction 
 }
 
 type Mutation {
@@ -15,6 +16,9 @@ type Mutation {
   # disableConfiguration(id: ID!): Configuration!
   "Crea nuevo token"
   saveToken(token: String): String
+
+  "Crea una nueva restricción general"
+  newGeneralRestriction(generalRestriction: GeneralRestrictionInput!): GeneralRestriction!
 }
 
 input ConfigurationInput {
@@ -51,4 +55,14 @@ type Configuration {
   category: Int!
   skuRef: Int!
   productRef: Int!
+}
+
+input GeneralRestrictionInput {
+  status: Boolean!
+  list: [String]
+}
+
+type GeneralRestriction {
+  status: Boolean!
+  list: [String]
 }

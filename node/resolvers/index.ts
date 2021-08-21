@@ -6,11 +6,15 @@ import configuration from './configuration';
 import configurationByCategory from './configurationByCategory';
 import configurationByBrand from './configurationByBrand';
 import configurationBySeller from './configurationBySeller';
+import newGeneralRestriction from './newGeneralRestriction';
+import generalRestriction from './generalRestriction';
 
 export const mutations = {
   saveToken,
   newConfiguration,
-  updateConfiguration
+  updateConfiguration,
+  newGeneralRestriction,
+  
 }
 
 export const queries = {
@@ -18,5 +22,7 @@ export const queries = {
   configuration,
   configurationByCategory,
   configurationByBrand,
-  configurationBySeller
+  configurationBySeller,
+  generalRestriction
+
 }
