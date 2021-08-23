@@ -7,7 +7,8 @@ import {
   Tabs
 } from 'vtex.styleguide'
 import { GeneralRestriction } from './components/GeneralRestriction'
-import globalCategoriesGQL from './graphql/globalCategories.gql'
+import RestrictionByScore from './components/RestrictionByScore'
+import categoriesGQL from './graphql/categories.gql'
 
 
 const RestrictionMatcher: FC = () => {
@@ -15,13 +16,14 @@ const RestrictionMatcher: FC = () => {
   const [currentTab, setcurrentTab] = useState<any>(1)
   const [globalCategoriesList, setglobalCategoriesList] = useState({});
 
-  useQuery(globalCategoriesGQL, {
-    onCompleted: (({ globalCategories }: any) => {
-      setglobalCategoriesList(globalCategories);
+  useQuery(categoriesGQL, {
+    onCompleted: (({ categories }: any) => {
+      let departmentList = categories.items.filter((category: any) => category.fatherCategoryId === "");
+      setglobalCategoriesList(departmentList);
     })
   })
 
-  
+
   return (
     <Layout>
       <PageBlock
@@ -43,7 +45,9 @@ const RestrictionMatcher: FC = () => {
               label="Configuracion"
               active={currentTab === 2}
               onClick={() => setcurrentTab(2)}>
-              <p>Content for the invoices.</p>
+              <RestrictionByScore
+                globalCategoriesList={globalCategoriesList}
+              />
             </Tab>
           </Tabs>
         </div>

@@ -9,6 +9,8 @@ export default async function newConfiguration(
   let configurationMatcher = await <any>ctx.clients.vbase.getJSON<any>('vtexcol.myvtex', 'configurationMatcher', true);
   //console.log('currentConfigurationMatcher', configurationMatcher);
 
+  configuration.restrictionStatus = false;
+  configuration.restrictionList = [];
   configuration.created_at = Date.now();
   configuration.updated_at = Date.now();
 

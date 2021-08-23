@@ -15,5 +15,7 @@ mutation updateConf($configuration: ConfigurationInput!) {
     skuName
     brand
     category
+    restrictionStatus
+    restrictionList
   }
 }

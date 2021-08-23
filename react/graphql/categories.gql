@@ -4,6 +4,9 @@ query categories {
     items {
       label:name
       value:id
+      hasChildrenCategories
+      order
+      fatherCategoryId
     }
   }
 }

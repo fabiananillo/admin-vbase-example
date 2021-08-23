@@ -7,7 +7,7 @@ import {
 } from 'vtex.styleguide'
 
 
-export const GeneralRestriction = ({ globalCategoriesList }: any) => {
+export const RestrictionScoreDetails = ({ globalCategoriesList }: any) => {
 
     const [inputValue, setInputValue] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
@@ -21,7 +21,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
 
     useQuery(generalRestrictionGQL, {
         onCompleted: ({ generalRestriction }: any) => {
-            //console.log('generalRestrictionQuery', generalRestriction)
+            console.log('generalRestrictionQuery', generalRestriction)
             setcheckGeneralRestriction(generalRestriction.status)
             setSelectedDepartment(generalRestriction.list)
         },
@@ -84,7 +84,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
     }
 
     const handleSubmit = async (e: any) => {
-        //console.log('event', e)
+        console.log('event', e)
         e.preventDefault()
         selectedDepartment.sort((a: any, b: any) => (parseInt(a) > parseInt(b) && 1) || -1)
         newGeneralRestriction({
@@ -141,25 +141,21 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                     <div className="mb5">
                         <ol>
                             {selectedDepartment.map((departmentKey: any) => {
-                                if (globalCategoriesList.length > 0) {
-                                    //console.log('globalCategoriew', globalCategoriesList)
-                                    let department = globalCategoriesList?.find(
-                                        (departmentFind: any) => departmentFind.value === departmentKey
-                                    )
-                                    return (
-                                        <li key={departmentKey}>
-                                            {' '}
-                                            {department?.label}{' '}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemove(departmentKey)}
-                                            >
-                                                Remover
-                                            </button>
-                                        </li>
-                                    )
-                                }
-                                return null;
+                                let department = globalCategoriesList.find(
+                                    (departmentFind: any) => departmentFind.value === departmentKey
+                                )
+                                return (
+                                    <li key={departmentKey}>
+                                        {' '}
+                                        {department.label}{' '}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemove(departmentKey)}
+                                        >
+                                            Remover
+                                        </button>
+                                    </li>
+                                )
                             })}
                         </ol>
                     </div>
@@ -188,3 +184,4 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
         </div>
     )
 }
+export default RestrictionScoreDetails
