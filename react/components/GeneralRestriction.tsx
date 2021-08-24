@@ -77,9 +77,9 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                 setTerm(term)
             }
         },
-        onSearch: (...args: any) => console.log('onSearch:', ...args),
+        //onSearch: (...args: any) => console.log('onSearch:', ...args),
         onClear: () => setTerm(''),
-        placeholder: 'Buscar departamento',
+        placeholder: 'Buscar departamento...(Tecnología, Moda)',
         value: term,
     }
 

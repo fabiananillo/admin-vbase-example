@@ -39,7 +39,7 @@ const RestrictionByScore = ({ globalCategoriesList }: any) => {
 
     const lineActions = [
         {
-            label: (_: any) => 'Ver Detalles',
+            label: (_: any) => 'Ver Restricciones',
             onClick: async ({ rowData }: any) => {
                 let configuration = await configurationList.find(
                     (conf: any) => conf.id === rowData.id
@@ -74,7 +74,7 @@ const RestrictionByScore = ({ globalCategoriesList }: any) => {
 
     return (
         <Layout>
-            <PageBlock title="Listar Configuración" variation="full">
+            <PageBlock title="Lista de Configuraciones" variation="full">
                 <div className="mb9">
                     <Table
                         schema={defaultSchema}

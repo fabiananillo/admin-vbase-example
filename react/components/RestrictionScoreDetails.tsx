@@ -1,31 +1,28 @@
 import React, { useState } from 'react'
-import { useMutation, useQuery } from 'react-apollo'
-import newGeneralRestrictionGQL from '../graphql/newGeneralRestriction.gql'
-import generalRestrictionGQL from '../graphql/generalRestriction.gql'
+import { useMutation } from 'react-apollo'
+import updateConfigurationGQL from '../graphql/updateConfiguration.gql'
 import {
     Checkbox, AutocompleteInput, Button, Alert
 } from 'vtex.styleguide'
 
 
-export const RestrictionScoreDetails = ({ globalCategoriesList }: any) => {
+export const RestrictionScoreDetails = ({
+    globalCategoriesList,
+    configuration,
+    setConfigurationList,
+    setInitialConfigurationList
+}: any) => {
 
     const [inputValue, setInputValue] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
     const [term, setTerm] = useState<string>('')
-    const [checkGeneralRestriction, setcheckGeneralRestriction] = useState<boolean>()
-    const [newGeneralRestriction] = useMutation(newGeneralRestrictionGQL)
-    const [selectedDepartment, setSelectedDepartment] = useState<any>([])
+    const [checkGeneralRestriction, setcheckGeneralRestriction] = useState<boolean>(configuration.restrictionStatus)
+    const [updateConfiguration] = useMutation(updateConfigurationGQL)
+    const [selectedDepartment, setSelectedDepartment] = useState<any>(!configuration.restrictionList ? [] : configuration.restrictionList)
     const [alertType, setAlertType] = useState<string>('')
     const [alertMessage, setAlertMessage] = useState<string>('')
     const [showAlert, setShowAlert] = useState<boolean>(false)
 
-    useQuery(generalRestrictionGQL, {
-        onCompleted: ({ generalRestriction }: any) => {
-            console.log('generalRestrictionQuery', generalRestriction)
-            setcheckGeneralRestriction(generalRestriction.status)
-            setSelectedDepartment(generalRestriction.list)
-        },
-    })
 
     const handleCheckGeneralRestriction = () => {
         if (checkGeneralRestriction) {
@@ -77,34 +74,61 @@ export const RestrictionScoreDetails = ({ globalCategoriesList }: any) => {
                 setTerm(term)
             }
         },
-        onSearch: (...args: any) => console.log('onSearch:', ...args),
+        //onSearch: (...args: any) => console.log('onSearch:', ...args),
         onClear: () => setTerm(''),
-        placeholder: 'Buscar departamento',
+        placeholder: 'Buscar departamento...(Tecnología, Moda)',
         value: term,
     }
 
     const handleSubmit = async (e: any) => {
-        console.log('event', e)
+        //console.log('event', e)
         e.preventDefault()
         selectedDepartment.sort((a: any, b: any) => (parseInt(a) > parseInt(b) && 1) || -1)
-        newGeneralRestriction({
+        let configurationVariables: any = {
+            id: configuration.id,
+            name: configuration.name,
+            status: configuration.status,
+            type: configuration.type,
+            value: configuration.value,
+            sellers: configuration.sellers,
+            ean: configuration.ean,
+            productRef: configuration.productRef,
+            productName: configuration.productName,
+            skuName: configuration.skuName,
+            brand: configuration.brand,
+            category: configuration.category,
+            skuRef: configuration.skuRef,
+            created_at: configuration.created_at,
+            updated_at: configuration.updated_at,
+            restrictionStatus: checkGeneralRestriction,
+            restrictionList: selectedDepartment
+        }
+        updateConfiguration({
             variables: {
-                generalRestriction: {
-                    status: checkGeneralRestriction,
-                    list: selectedDepartment
-                },
+                configuration: configurationVariables,
             },
-        }).then(({ data }: any) => {
-            setcheckGeneralRestriction(data.newGeneralRestriction.status);
-            setSelectedDepartment(data.newGeneralRestriction.list)
-            setAlertType('success')
-            setAlertMessage('Se ha guardado la regla con éxito.')
-            setShowAlert(true)
-        }).catch((_: any) => {
-            setAlertType('error')
-            setAlertMessage('Ha ocurrido un error')
-            setShowAlert(true)
         })
+            .then(({ data }: any) => {
+                console.log('updated', data)
+                // setFormValues(INITIAL_FORM_VALUES)
+                // setNameConfig('')
+                // setSeller([])
+                //sort by last id
+
+                let configurationList = data.updateConfiguration.sort((a: any, b: any) => (a.id < b.id && 1) || -1)
+                setConfigurationList(configurationList)
+                setInitialConfigurationList(configurationList)
+
+                setAlertType('success')
+                setAlertMessage('Se ha guardado la configuración con éxito.')
+                setShowAlert(true)
+            })
+            .catch((err: any) => {
+                console.log('error', err)
+                setAlertType('error')
+                setAlertMessage('Ha ocurrido un error, intente nuevamente.')
+                setShowAlert(true)
+            })
     }
 
     const handleRemove = (id: any) => {
@@ -117,7 +141,7 @@ export const RestrictionScoreDetails = ({ globalCategoriesList }: any) => {
 
     return (
         <div className="row">
-            <h1>Rules</h1>
+            <h1>Reglas para {configuration.name}</h1>
             <div className="mt4 flex">
                 <form onSubmit={handleSubmit}>
                     <div className="mb5">

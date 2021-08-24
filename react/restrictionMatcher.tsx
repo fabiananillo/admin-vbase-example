@@ -28,7 +28,6 @@ const RestrictionMatcher: FC = () => {
     <Layout>
       <PageBlock
         title="Restriction Matcher"
-        subtitle="Configuración de parámetros"
         variation="full"
       >
         <div>
@@ -42,7 +41,7 @@ const RestrictionMatcher: FC = () => {
               />
             </Tab>
             <Tab
-              label="Configuracion"
+              label="Configuración"
               active={currentTab === 2}
               onClick={() => setcurrentTab(2)}>
               <RestrictionByScore
