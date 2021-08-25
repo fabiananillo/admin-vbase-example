@@ -98,6 +98,10 @@ const AdminExample: FC = () => {
 
   //get category list
   useQuery(categoriesQuery, {
+    variables: {
+      pageSize: 0,
+      page: 0
+    },
     onCompleted: ({ categories }: any) => {
       categories.items.sort(
         (a: any, b: any) => (a.label.toLowerCase() > b.label.toLowerCase() && 1) || -1
