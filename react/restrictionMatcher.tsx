@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { useQuery } from 'react-apollo'
 import {
   Layout,
@@ -14,14 +14,57 @@ import categoriesGQL from './graphql/categories.gql'
 const RestrictionMatcher: FC = () => {
 
   const [currentTab, setcurrentTab] = useState<any>(1)
-  const [globalCategoriesList, setglobalCategoriesList] = useState({});
-
-  useQuery(categoriesGQL, {
-    onCompleted: (({ categories }: any) => {
-      let departmentList = categories.items.filter((category: any) => category.fatherCategoryId === "");
-      setglobalCategoriesList(departmentList);
-    })
+  const [globalCategoriesList, setglobalCategoriesList] = useState<any>([]);
+  const { fetchMore } = useQuery(categoriesGQL, {
+    variables: {
+      pageSize: 100,
+      page: 0
+    },
+    notifyOnNetworkStatusChange: true,
+    // onCompleted: (({ categories }: any) => {
+    //   //console.log('categoriesFound', categories)
+    //   let departmentList = categories.items.filter((category: any) => category.fatherCategoryId === "");
+    //   setglobalCategoriesList(departmentList);
+    // })
   })
+
+  // console.log(fetchMore);
+
+  const fetchRest = async () => {
+    let isEmpty = false
+    let page = 1;
+    let foundDepartments: any[] = []
+    while (!isEmpty) {
+      const { data } = await fetchMore({
+        variables: {
+          pageSize: 100,
+          page: page
+        },
+        updateQuery: (() => { })
+      })
+      page = page + 1;
+      if (data.categories.items.length == 0) {
+        isEmpty = true
+      } else {
+        let departmentList = await data.categories.items.filter((category: any) => category.fatherCategoryId === "");
+        if (departmentList.length > 0) {
+          departmentList.map((department: any) => {
+            //console.log('foundDeparments', department)
+            foundDepartments = [...foundDepartments, department]
+          })
+        }
+
+      }
+    }
+    return foundDepartments;
+  }
+
+  useEffect(() => {
+    fetchRest().then((departmentList: any) => {
+      setglobalCategoriesList(departmentList);
+      //console.log('fetchRest', departmentList)
+    });
+  }, [])
 
 
   return (

@@ -1,5 +1,5 @@
-query categories {
-  categories(pageSize: 0, page: 0, term: "")
+query categories($pageSize: Int!, $page: Int!) {
+  categories(pageSize: $pageSize, page: $page, term: "")
     @context(provider: "vtex.catalog-graphql") {
     items {
       label:name
