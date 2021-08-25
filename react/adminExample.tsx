@@ -234,14 +234,22 @@ const AdminExample: FC = () => {
         configuration: configurationVariables,
       },
     })
-      .then((resp: any) => {
-        setFormValues(INITIAL_FORM_VALUES)
-        setNameConfig('')
-        setSelectedSeller([])
-        console.log('se ha guardado', resp)
-        setAlertType('success')
-        setAlertMessage('Se ha guardado la configuración con éxito.')
-        setShowAlert(true)
+      .then(({ data }: any) => {
+        if (data.newConfiguration.length === 0) {
+          setEnableButton(false)
+          setAlertType('error')
+          setAlertMessage('Ya existe un seller guardado con esta categoría o marca.')
+          setShowAlert(true)
+        } else {
+          setFormValues(INITIAL_FORM_VALUES)
+          setNameConfig('')
+          setSelectedSeller([])
+          console.log('se ha guardado', data)
+          setAlertType('success')
+          setAlertMessage('Se ha guardado la configuración con éxito.')
+          setShowAlert(true)
+        }
+
       })
       .catch((err: any) => {
         console.log('error', err)

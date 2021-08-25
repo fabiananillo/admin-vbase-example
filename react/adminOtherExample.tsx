@@ -17,8 +17,8 @@ const AdminOtherExample: FC = () => {
   const [initialConfigurationList, setInitialConfigurationList] = useState<any>(
     {}
   )
-  const [categoryList, setCategoryList] = useState<any>({})
-  const [brandList, setBrandList] = useState<any>({})
+  const [categoryList, setCategoryList] = useState<any>([])
+  const [brandList, setBrandList] = useState<any>([])
   const [sellerList, setSellerList] = useState<any>([])
   const [searchValue, setSearchValue] = useState<any>('')
   const {
@@ -85,13 +85,13 @@ const AdminOtherExample: FC = () => {
         cellRenderer: ({ rowData }: any) => {
           if (rowData.type == 'categoria') {
             //console.log('rowData', rowData)
-            let value = categoryList.find(
+            let value = categoryList?.find(
               (cat: any) => cat.value === rowData.value
             )
             return value?.label
           }
           if (rowData.type == 'marca') {
-            let value = brandList.find(
+            let value = brandList?.find(
               (brand: any) => brand.value === rowData.value
             )
             return value?.label

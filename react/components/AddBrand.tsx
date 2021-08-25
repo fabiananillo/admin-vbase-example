@@ -19,6 +19,7 @@ export const AddBrand = ({
         options={brandList}
         value={selectedBrand}
         onChange={handleSelectBrand}
+        placeholder="Por favor seleccione..."
       />
     </div>
   )

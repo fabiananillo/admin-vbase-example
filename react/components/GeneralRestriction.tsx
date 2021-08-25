@@ -22,8 +22,8 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
     useQuery(generalRestrictionGQL, {
         onCompleted: ({ generalRestriction }: any) => {
             //console.log('generalRestrictionQuery', generalRestriction)
-            setcheckGeneralRestriction(generalRestriction.status)
-            setSelectedDepartment(generalRestriction.list)
+            setcheckGeneralRestriction(generalRestriction?.status)
+            setSelectedDepartment(generalRestriction?.list)
         },
     })
 
@@ -140,7 +140,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                     </div>
                     <div className="mb5">
                         <ol>
-                            {selectedDepartment.map((departmentKey: any) => {
+                            {selectedDepartment?.map((departmentKey: any) => {
                                 if (globalCategoriesList.length > 0) {
                                     //console.log('globalCategoriew', globalCategoriesList)
                                     let department = globalCategoriesList?.find(

@@ -15,11 +15,12 @@ export const AddCategory = (
 
   return (
     <div>
-      <h2>Seleccione Categoria</h2>
+      <h2>Seleccione Categoría</h2>
       <Dropdown
         options={categoryList}
         value={selectedCategory}
         onChange={handleSelectCategory}
+        placeholder="Por favor seleccione..."
       />
     </div>
   )
