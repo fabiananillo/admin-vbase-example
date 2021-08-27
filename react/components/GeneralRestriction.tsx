@@ -138,7 +138,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                             onChange={handleInputChange}
                         />
                     </div>
-                    <div className="mb5">
+                    <div className="mb9">
                         <ol>
                             {selectedDepartment?.map((departmentKey: any) => {
                                 if (globalCategoriesList.length > 0) {
@@ -147,15 +147,21 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                                         (departmentFind: any) => departmentFind.value === departmentKey
                                     )
                                     return (
-                                        <li key={departmentKey}>
+                                        <li
+                                            className="t-action--small pv4"
+                                            key={departmentKey}
+                                        >
                                             {' '}
-                                            {department?.label}{' '}
-                                            <button
+                                            {department?.label}
+                                            {' '}
+                                            <Button
                                                 type="button"
+                                                variation="danger"
+                                                size="small"
                                                 onClick={() => handleRemove(departmentKey)}
                                             >
-                                                Remover
-                                            </button>
+                                                Quitar
+                                            </Button>
                                         </li>
                                     )
                                 }

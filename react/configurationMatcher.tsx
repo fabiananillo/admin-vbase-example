@@ -7,11 +7,11 @@ import {
   Tabs
 } from 'vtex.styleguide'
 import { GeneralRestriction } from './components/GeneralRestriction'
-import RestrictionByScore from './components/RestrictionByScore'
 import categoriesGQL from './graphql/categories.gql'
+import ScoreProfiles from './scoreProfiles'
 
 
-const RestrictionMatcher: FC = () => {
+const ConfigurationMatcher: FC = () => {
 
   const [currentTab, setcurrentTab] = useState<any>(1)
   const [globalCategoriesList, setglobalCategoriesList] = useState<any>([]);
@@ -68,9 +68,9 @@ const RestrictionMatcher: FC = () => {
 
 
   return (
-    <Layout>
+    <Layout fullWidth="true">
       <PageBlock
-        title="Restriction Matcher"
+        title="Matcher Configuration"
         variation="full"
       >
         <div>
@@ -84,18 +84,15 @@ const RestrictionMatcher: FC = () => {
               />
             </Tab>
             <Tab
-              label="Configuración"
+              label="Perfiles Configuración"
               active={currentTab === 2}
               onClick={() => setcurrentTab(2)}>
-              <RestrictionByScore
-                globalCategoriesList={globalCategoriesList}
-              />
+              <ScoreProfiles />
             </Tab>
           </Tabs>
         </div>
-
       </PageBlock>
     </Layout>
   )
 }
-export default RestrictionMatcher
+export default ConfigurationMatcher

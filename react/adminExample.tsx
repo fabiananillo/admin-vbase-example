@@ -311,15 +311,21 @@ const AdminExample: FC = () => {
                     (sellerFind: any) => sellerFind.value === seller
                   )
                   return (
-                    <li key={seller}>
+                    <li
+                      className="t-action--small pv4"
+                      key={seller}
+                    >
                       {' '}
-                      {sellerName.label}{' '}
-                      <button
+                      {sellerName?.label}
+                      {' '}
+                      <Button
                         type="button"
+                        variation="danger"
+                        size="small"
                         onClick={() => handleRemove(seller)}
                       >
-                        Remover
-                      </button>
+                        Quitar
+                      </Button>
                     </li>
                   )
                 })}
