@@ -135,6 +135,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                         />
                     </div>
                     <div className="mb5">
+                        <h2>Departamentos excentos de restricción:</h2>
                         <AutocompleteInput
                             value={inputValue}
                             input={input}
@@ -152,7 +153,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                                     )
                                     return (
                                         <li
-                                            className="t-action--small pv4"
+                                            className="t-action--small pv3"
                                             key={departmentKey}
                                         >
                                             {' '}
