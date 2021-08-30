@@ -247,12 +247,12 @@ export const ConfigurationDetails = (
   }
 
   const handleRemove = (id: any) => {
-    console.log('id to remove', id)
-    console.log('the sellers list', selectedSeller)
+    //console.log('id to remove', id)
+    //console.log('the sellers list', selectedSeller)
     let newList = selectedSeller.filter((seller: any) => seller !== id)
 
     setSelectedSeller(newList)
-    console.log('newList es', newList)
+    //console.log('newList es', newList)
     //setSeller(newList)
   }
 
@@ -290,7 +290,7 @@ export const ConfigurationDetails = (
                   let sellerName = sellerList.find(
                     (sellerFind: any) => sellerFind.value === seller
                   )
-                  console.log('sellerName', sellerName);
+                  //console.log('sellerName', sellerName);
                   return (
                     <li
                       className="t-action--small pv4"

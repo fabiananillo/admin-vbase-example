@@ -64,7 +64,7 @@ export const AddSeller = ({
         setTerm(term)
       }
     },
-    onSearch: (...args: any) => console.log('onSearch:', ...args),
+    //onSearch: (...args: any) => console.log('onSearch:', ...args),
     onClear: () => setTerm(''),
     placeholder: 'Buscar seller',
     value: term,

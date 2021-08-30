@@ -12,7 +12,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
     const [inputValue, setInputValue] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
     const [term, setTerm] = useState<string>('')
-    const [checkGeneralRestriction, setcheckGeneralRestriction] = useState<boolean>()
+    const [checkGeneralRestriction, setcheckGeneralRestriction] = useState<boolean>(false)
     const [newGeneralRestriction] = useMutation(newGeneralRestrictionGQL)
     const [selectedDepartment, setSelectedDepartment] = useState<any>([])
     const [alertType, setAlertType] = useState<string>('')
@@ -22,8 +22,10 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
     useQuery(generalRestrictionGQL, {
         onCompleted: ({ generalRestriction }: any) => {
             //console.log('generalRestrictionQuery', generalRestriction)
-            setcheckGeneralRestriction(generalRestriction?.status)
-            setSelectedDepartment(generalRestriction?.list)
+            if (generalRestriction) {
+                setcheckGeneralRestriction(generalRestriction?.status)
+                setSelectedDepartment(generalRestriction?.list)
+            }
         },
     })
 
@@ -43,16 +45,17 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
 
     const handleAddRestriction = (e: any) => {
         let department = e[0].value
-        if (department.length > 0) {
-            let foundDepartment = selectedDepartment.find(
-                (departmentFind: any) => departmentFind === department
-            )
-            if (!foundDepartment) {
-                setSelectedDepartment((departments: any) => [...departments, department])
-                setTerm('')
-                setInputValue('')
-            }
+
+        let foundDepartment = selectedDepartment?.find(
+            (departmentFind: any) => departmentFind === department
+        )
+
+        if (!foundDepartment) {
+            setSelectedDepartment((departments: any) => [...departments, department])
+            setTerm('')
+            setInputValue('')
         }
+
     }
 
 
@@ -86,7 +89,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
     const handleSubmit = async (e: any) => {
         //console.log('event', e)
         e.preventDefault()
-        selectedDepartment.sort((a: any, b: any) => (parseInt(a) > parseInt(b) && 1) || -1)
+        selectedDepartment?.sort((a: any, b: any) => (parseInt(a) > parseInt(b) && 1) || -1)
         newGeneralRestriction({
             variables: {
                 generalRestriction: {
@@ -100,7 +103,8 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
             setAlertType('success')
             setAlertMessage('Se ha guardado la regla con éxito.')
             setShowAlert(true)
-        }).catch((_: any) => {
+        }).catch((err: any) => {
+            console.log('error', err)
             setAlertType('error')
             setAlertMessage('Ha ocurrido un error')
             setShowAlert(true)
