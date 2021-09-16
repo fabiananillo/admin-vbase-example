@@ -2,5 +2,8 @@
   "admin-example.navigation.label": "Score Matcher",
   "admin-example.navigation.search.kws": "token",
   "admin-example.navigation.insight": "Nueva Configuración",
-  "admin-example.navigation.management": "Configuración Matcher"
+  "admin-example.navigation.management": "Configuración Matcher",
+  "admin-example.navigation.restriction": "Matcher Restriction",
+  "admin-example.score-matcher.featureTitle": "Configuración Matcher",
+  "admin-example.score-matcher.restrictionTitle": "Reglas"
 }

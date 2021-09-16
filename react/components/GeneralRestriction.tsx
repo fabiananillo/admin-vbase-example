@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery } from 'react-apollo'
+import {
+    MessageDescriptor,
+    useIntl,
+    defineMessages,
+} from 'react-intl'
 import newGeneralRestrictionGQL from '../graphql/newGeneralRestriction.gql'
 import generalRestrictionGQL from '../graphql/generalRestriction.gql'
 import {
@@ -18,6 +23,27 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
     const [alertType, setAlertType] = useState<string>('')
     const [alertMessage, setAlertMessage] = useState<string>('')
     const [showAlert, setShowAlert] = useState<boolean>(false)
+
+    const messages = defineMessages({
+        restrictionTitle: { id: 'admin-example.score-matcher.restrictionTitle' },
+        restrictionPlaceholder: { id: 'admin-example.score-matcher.restrictionPlaceholder' },
+        restrictionCheckbox: { id: 'admin-example.score-matcher.restrictionCheckbox' },
+        removeBtn: { id: 'admin-example.score-matcher.removeBtn' },
+        saveBtn: { id: 'admin-example.score-matcher.saveBtn' },
+        restrictionAlertSuccess: { id: 'admin-example.score-matcher.restrictionAlertSuccess' },
+        restrictionAlertError: { id: 'admin-example.score-matcher.restrictionAlertError' }
+    })
+    const intl = useIntl();
+    const translateMessage = (message: MessageDescriptor) =>
+        intl.formatMessage(message)
+
+    let restrictionTitle = translateMessage(messages.restrictionTitle)
+    let restrictionPlaceholder = translateMessage(messages.restrictionPlaceholder)
+    let restrictionCheckbox = translateMessage(messages.restrictionCheckbox)
+    let removeBtn = translateMessage(messages.removeBtn)
+    let saveBtn = translateMessage(messages.saveBtn)
+    let restrictionAlertSuccess = translateMessage(messages.restrictionAlertSuccess)
+    let restrictionAlertError = translateMessage(messages.restrictionAlertError)
 
     useQuery(generalRestrictionGQL, {
         onCompleted: ({ generalRestriction }: any) => {
@@ -82,7 +108,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
         },
         //onSearch: (...args: any) => console.log('onSearch:', ...args),
         onClear: () => setTerm(''),
-        placeholder: 'Buscar departamento...(Tecnología, Moda)',
+        placeholder: restrictionPlaceholder,
         value: term,
     }
 
@@ -101,12 +127,12 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
             setcheckGeneralRestriction(data.newGeneralRestriction.status);
             setSelectedDepartment(data.newGeneralRestriction.list)
             setAlertType('success')
-            setAlertMessage('Se ha guardado la regla con éxito.')
+            setAlertMessage(restrictionAlertSuccess)
             setShowAlert(true)
         }).catch((err: any) => {
             console.log('error', err)
             setAlertType('error')
-            setAlertMessage('Ha ocurrido un error')
+            setAlertMessage(restrictionAlertError)
             setShowAlert(true)
         })
     }
@@ -121,21 +147,20 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
 
     return (
         <div className="row">
-            <h1>Rules</h1>
+            <h1>{restrictionTitle}</h1>
             <div className="mt4 flex">
                 <form onSubmit={handleSubmit}>
                     <div className="mb5">
                         <Checkbox
                             checked={checkGeneralRestriction}
-                            id="option-0"
-                            label="¿Desea restringir match de productos de diferentes sellers?"
+                            id="option-matcher"
+                            label={restrictionCheckbox}
                             name="default-checkbox-group"
                             onChange={handleCheckGeneralRestriction}
                             value="option-0"
                         />
                     </div>
                     <div className="mb5">
-                        <h2>Departamentos excentos de restricción:</h2>
                         <AutocompleteInput
                             value={inputValue}
                             input={input}
@@ -165,7 +190,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                                                 size="small"
                                                 onClick={() => handleRemove(departmentKey)}
                                             >
-                                                Quitar
+                                                {removeBtn}
                                             </Button>
                                         </li>
                                     )
@@ -191,7 +216,7 @@ export const GeneralRestriction = ({ globalCategoriesList }: any) => {
                             type="submit"
                             variation="primary"
                         >
-                            Guardar
+                            {saveBtn}
                         </Button>
                     </div>
                 </form>

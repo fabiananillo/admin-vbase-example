@@ -1,8 +1,4 @@
 {
-  "admin.app.example": {
-    "component": "adminExample",
-    "path": "/admin/app/adminExample"
-  },
   "admin.app.configurationMatcher": {
     "component": "configurationMatcher",
     "path": "/admin/app/configurationMatcher"

@@ -6,6 +6,11 @@ import {
   Tab,
   Tabs
 } from 'vtex.styleguide'
+import {
+  MessageDescriptor,
+  useIntl,
+  defineMessages,
+} from 'react-intl'
 import { GeneralRestriction } from './components/GeneralRestriction'
 import categoriesGQL from './graphql/categories.gql'
 import ScoreProfiles from './scoreProfiles'
@@ -15,6 +20,18 @@ const ConfigurationMatcher: FC = () => {
 
   const [currentTab, setcurrentTab] = useState<any>(1)
   const [globalCategoriesList, setglobalCategoriesList] = useState<any>([]);
+  const messages = defineMessages({
+    featureTitle: { id: 'admin-example.score-matcher.featureTitle' },
+    featureGeneralTab: { id: 'admin-example.score-matcher.featureGeneralTab' },
+    featureScoreTab: { id: 'admin-example.score-matcher.featureScoreTab' },
+  })
+  const intl = useIntl();
+  const translateMessage = (message: MessageDescriptor) =>
+    intl.formatMessage(message)
+
+  let featureTitle = translateMessage(messages.featureTitle)
+  let featureGeneralTab = translateMessage(messages.featureGeneralTab)
+  let featureScoreTab = translateMessage(messages.featureScoreTab)
   const { fetchMore } = useQuery(categoriesGQL, {
     variables: {
       pageSize: 100,
@@ -70,13 +87,13 @@ const ConfigurationMatcher: FC = () => {
   return (
     <Layout fullWidth="true">
       <PageBlock
-        title="Matcher Configuration"
+        title={featureTitle}
         variation="full"
       >
         <div>
           <Tabs fullWidth>
             <Tab
-              label="General"
+              label={featureGeneralTab}
               active={currentTab === 1}
               onClick={() => setcurrentTab(1)}>
               <GeneralRestriction
@@ -84,7 +101,7 @@ const ConfigurationMatcher: FC = () => {
               />
             </Tab>
             <Tab
-              label="Perfiles Configuración"
+              label={featureScoreTab}
               active={currentTab === 2}
               onClick={() => setcurrentTab(2)}>
               <ScoreProfiles />

@@ -4,10 +4,6 @@
   "searchKeyWordsHelpers": "admin-example.navigation.search.kws",
   "subSectionItems": [
     {
-      "labelId": "admin-example.navigation.insight",
-      "path": "/admin/adminExample"
-    },
-    {
       "labelId": "admin-example.navigation.management",
       "path": "/admin/configurationMatcher"
     }

@@ -7,6 +7,11 @@ import {
   RadioGroup,
   Alert,
 } from 'vtex.styleguide'
+import {
+  MessageDescriptor,
+  useIntl,
+  defineMessages,
+} from 'react-intl'
 import { AddSeller } from './components/AddSeller'
 import { AddCategory } from './components/AddCategory'
 import { AddBrand } from './components/AddBrand'
@@ -76,6 +81,21 @@ const AdminExample: FC = () => {
   const [brandList, setBrandList] = useState<any>([])
   const [categoryList, setCategoryList] = useState<any>([])
 
+  const messages = defineMessages({
+    newConfigurationTitle: { id: 'admin-example.score-matcher.newConfigurationTitle' },
+    configurationSellerType: { id: 'admin-example.score-matcher.configurationSellerType' },
+    configurationCategoryType: { id: 'admin-example.score-matcher.configurationCategoryType' },
+    configurationBrandType: { id: 'admin-example.score-matcher.configurationBrandType' },
+    saveBtn: { id: 'admin-example.score-matcher.saveBtn' },
+    clearBtn: { id: 'admin-example.score-matcher.clearBtn' },
+  })
+  const intl = useIntl();
+  const translateMessage = (message: MessageDescriptor) =>
+    intl.formatMessage(message)
+
+  let newConfigurationTitle = translateMessage(messages.newConfigurationTitle)
+  let saveBtn = translateMessage(messages.saveBtn)
+  let clearBtn = translateMessage(messages.clearBtn)
   //getSeller list
   useQuery(sellersQuery, {
     onCompleted: ({ sellers }: any) => {
@@ -279,8 +299,7 @@ const AdminExample: FC = () => {
   return (
     <Layout>
       <PageBlock
-        title="Información Score"
-        subtitle="Configuración de parámetros"
+        title={newConfigurationTitle}
         variation="full"
       >
         <form onSubmit={handleSubmit}>
@@ -479,12 +498,12 @@ const AdminExample: FC = () => {
                   variation="primary"
                   disabled={enableButton}
                 >
-                  Guardar
+                  {saveBtn}
                 </Button>
               </span>
               <span className="mb4">
                 <Button variation="secondary" onClick={clearDataEvent}>
-                  Limpiar
+                  {clearBtn}
                 </Button>
               </span>
             </div>

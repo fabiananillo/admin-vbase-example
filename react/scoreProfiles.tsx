@@ -4,11 +4,17 @@ import { useQuery } from 'react-apollo'
 import { useDisclosure } from 'react-use-disclosure'
 import { ConfigurationDetails } from './components/ConfigurationDetails'
 import { useMutation } from 'react-apollo'
+import {
+    MessageDescriptor,
+    useIntl,
+    defineMessages,
+} from 'react-intl'
 import updateConfigurationGQL from './graphql/updateConfiguration.gql'
 import configurationGQL from './graphql/configuration.gql'
 import categoriesQuery from './graphql/categories.gql'
 import brandsQuery from './graphql/brands.gql'
 import sellersQuery from './graphql/sellers.gql'
+import AdminExample from './adminExample'
 
 const ScoreProfiles: FC = () => {
     const [updateConfiguration] = useMutation(updateConfigurationGQL)
@@ -21,10 +27,44 @@ const ScoreProfiles: FC = () => {
     const [brandList, setBrandList] = useState<any>([])
     const [sellerList, setSellerList] = useState<any>([])
     const [searchValue, setSearchValue] = useState<any>('')
+    const messages = defineMessages({
+        configurationTitle: { id: 'admin-example.score-matcher.configurationTitle' },
+        configurationPlaceholder: { id: 'admin-example.score-matcher.configurationPlaceholder' },
+        configurationAddNewBtn: { id: 'admin-example.score-matcher.configurationAddNewBtn' },
+        configurationTableName: { id: 'admin-example.score-matcher.configurationTableName' },
+        configurationTableStatus: { id: 'admin-example.score-matcher.configurationTableStatus' },
+        configurationTableType: { id: 'admin-example.score-matcher.configurationTableType' },
+        configurationTableValue: { id: 'admin-example.score-matcher.configurationTableValue' },
+        configurationTableUpdateAt: { id: 'admin-example.score-matcher.configurationTableUpdateAt' },
+        configurationTableDetails: { id: 'admin-example.score-matcher.configurationTableDetails' },
+        configurationTableEnable: { id: 'admin-example.score-matcher.configurationTableEnable' },
+        configurationTableDisable: { id: 'admin-example.score-matcher.configurationTableDisable' },
+    })
+    const intl = useIntl();
+    const translateMessage = (message: MessageDescriptor) =>
+        intl.formatMessage(message)
+
+    let configurationTitle = translateMessage(messages.configurationTitle)
+    let configurationPlaceholder = translateMessage(messages.configurationPlaceholder)
+    let configurationAddNewBtn = translateMessage(messages.configurationAddNewBtn)
+    let configurationTableName = translateMessage(messages.configurationTableName)
+    let configurationTableStatus = translateMessage(messages.configurationTableStatus)
+    let configurationTableType = translateMessage(messages.configurationTableType)
+    let configurationTableValue = translateMessage(messages.configurationTableValue)
+    let configurationTableUpdateAt = translateMessage(messages.configurationTableUpdateAt)
+    let configurationTableDetails = translateMessage(messages.configurationTableDetails)
+    let configurationTableEnable = translateMessage(messages.configurationTableEnable)
+    let configurationTableDisable = translateMessage(messages.configurationTableDisable)
     const {
         isOpen: isModalOpen,
         open: openModal,
         close: closeModal,
+    } = useDisclosure()
+
+    const {
+        isOpen: isModalOpenNewScore,
+        open: openModalNewScore,
+        close: closeModalNewScore,
     } = useDisclosure()
 
     //getSeller list
@@ -70,10 +110,10 @@ const ScoreProfiles: FC = () => {
     const defaultSchema = {
         properties: {
             name: {
-                title: 'Nombre',
+                title: configurationTableName,
             },
             status: {
-                title: 'Estado',
+                title: configurationTableStatus,
                 cellRenderer: ({ rowData }: any) => {
                     if (rowData.status) {
                         return 'Activo'
@@ -82,10 +122,10 @@ const ScoreProfiles: FC = () => {
                 },
             },
             type: {
-                title: 'Tipo',
+                title: configurationTableType,
             },
             value: {
-                title: 'Valor',
+                title: configurationTableValue,
                 cellRenderer: ({ rowData }: any) => {
                     if (rowData.type == 'categoria') {
                         //console.log('rowData', rowData)
@@ -110,7 +150,7 @@ const ScoreProfiles: FC = () => {
                 },
             },
             updated_at: {
-                title: 'Actualizado',
+                title: configurationTableUpdateAt,
                 cellRenderer: ({ rowData }: any) => {
                     let a = new Date(rowData.created_at * 1000)
                     let months = [
@@ -142,7 +182,7 @@ const ScoreProfiles: FC = () => {
 
     const lineActions = [
         {
-            label: (_: any) => 'Ver Detalles',
+            label: (_: any) => configurationTableDetails,
             onClick: async ({ rowData }: any) => {
                 let configuration = await configurationList.find(
                     (conf: any) => conf.id === rowData.id
@@ -154,7 +194,7 @@ const ScoreProfiles: FC = () => {
             },
         },
         {
-            label: (_: any) => 'Activar',
+            label: (_: any) => configurationTableEnable,
             onClick: ({ rowData }: any) => {
                 let configurationVariables: any = {
                     id: rowData.id,
@@ -198,7 +238,7 @@ const ScoreProfiles: FC = () => {
             },
         },
         {
-            label: (_: any) => 'Desactivar',
+            label: (_: any) => configurationTableDisable,
             isDangerous: true,
             onClick: ({ rowData }: any) => {
                 let configurationVariables: any = {
@@ -263,31 +303,31 @@ const ScoreProfiles: FC = () => {
     return (
 
         <div className="row">
-            <h1>Configuration Profiles</h1>
-                <Table
-                    schema={defaultSchema}
-                    items={configurationList}
-                    lineActions={lineActions}
-                    toolbar={{
-                        inputSearch: {
-                            value: searchValue,
-                            placeholder: 'Buscar...',
-                            onChange: handleInputSearchChange,
-                            // onClear: this.handleInputSearchClear,
-                            // onSubmit: this.handleInputSearchSubmit,
-                        },
-                        newLine: {
-                            label: 'Nueva Configuración',
-                            handleCallback: () => console.log('handle new line callback'),
-                        },
-                    }}
-                />
+            <h1>{configurationTitle}</h1>
+            <Table
+                schema={defaultSchema}
+                items={configurationList}
+                lineActions={lineActions}
+                toolbar={{
+                    inputSearch: {
+                        value: searchValue,
+                        placeholder: configurationPlaceholder,
+                        onChange: handleInputSearchChange,
+                        // onClear: this.handleInputSearchClear,
+                        // onSubmit: this.handleInputSearchSubmit,
+                    },
+                    newLine: {
+                        label: configurationAddNewBtn,
+                        handleCallback: () => openModalNewScore(),
+                    },
+                }}
+            />
 
             <div className="mb5">
                 <Modal
                     isOpen={isModalOpen}
                     onClose={closeModal}
-                    aria-label="Detalles Configuración"
+                    aria-label="Configuration Details"
                     aria-describedby="modal-description"
                 >
                     <div className="dark-gray" id="modal-description">
@@ -299,6 +339,18 @@ const ScoreProfiles: FC = () => {
                             setConfigurationList={setConfigurationList}
                             setInitialConfigurationList={setInitialConfigurationList}
                         />
+                    </div>
+                </Modal>
+            </div>
+            <div className="mb7">
+                <Modal
+                    isOpen={isModalOpenNewScore}
+                    onClose={closeModalNewScore}
+                    aria-label="New"
+                    aria-describedby="modal-description"
+                >
+                    <div className="dark-gray" id="modal-description">
+                        <AdminExample />
                     </div>
                 </Modal>
             </div>

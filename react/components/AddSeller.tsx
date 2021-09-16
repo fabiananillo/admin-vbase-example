@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
 import { AutocompleteInput } from 'vtex.styleguide'
+import {
+  MessageDescriptor,
+  useIntl,
+  defineMessages,
+} from 'react-intl'
 
 export const AddSeller = ({
   setSelectedSeller,
@@ -9,19 +14,17 @@ export const AddSeller = ({
   const [inputValue, setInputValue] = useState<string>('')
   const [term, setTerm] = useState<string>('')
   const [loadingSeller, setLoading] = useState<boolean>(false)
+  const messages = defineMessages({
+    addSellerTitle: { id: 'admin-example.score-matcher.addSellerTitle' },
+    addSellerPlaceholder: { id: 'admin-example.score-matcher.addSellerPlaceholder' }
+  })
 
+  const intl = useIntl();
+  const translateMessage = (message: MessageDescriptor) =>
+    intl.formatMessage(message)
 
-  // if (Object.entries(configuration).length !== 0) {
-
-  //   configuration.sellers.map((value: any) => {
-  //     console.log(value)
-  //     let foundSeller = selectedSeller.find((sellerFind: any) => sellerFind === value)
-  //     if (!foundSeller) {
-  //       //console.log('test')
-  //       setSelectedSeller((sellers: any) => [...sellers, value])
-  //     }
-  //   })
-  // }
+  let addSellerTitle = translateMessage(messages.addSellerTitle)
+  let addSellerPlaceholder = translateMessage(messages.addSellerPlaceholder)
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value)
@@ -66,13 +69,13 @@ export const AddSeller = ({
     },
     //onSearch: (...args: any) => console.log('onSearch:', ...args),
     onClear: () => setTerm(''),
-    placeholder: 'Buscar seller',
+    placeholder: addSellerPlaceholder,
     value: term,
   }
 
   return (
     <div>
-      <h2>Seleccione Sellers</h2>
+      <h2>{addSellerTitle}</h2>
       <AutocompleteInput
         value={inputValue}
         input={input}
